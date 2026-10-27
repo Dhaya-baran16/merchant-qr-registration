@@ -1,0 +1,1024 @@
+/* =========================================================
+   MERCHANT QR PORTAL
+   ORIGINAL ANIME-INSPIRED MASCOT SYSTEM
+   ========================================================= */
+
+
+/* =========================================================
+   MAIN FLOATING MASCOT
+   ========================================================= */
+
+#merchant-mascot {
+
+    position: fixed;
+
+    right: 22px;
+    bottom: 22px;
+
+    width: 110px;
+    height: 130px;
+
+    z-index: 9998;
+
+    pointer-events: none;
+
+    opacity: 0;
+
+    transform:
+        translateY(30px)
+        scale(0.85);
+
+    transition:
+        opacity 0.4s ease,
+        transform 0.4s ease;
+}
+
+
+#merchant-mascot.mascot-visible {
+
+    opacity: 1;
+
+    transform:
+        translateY(0)
+        scale(1);
+}
+
+
+/* =========================================================
+   CHARACTER BODY
+   ========================================================= */
+
+.mascot-character {
+
+    position: absolute;
+
+    left: 50%;
+    top: 50%;
+
+    width: 82px;
+    height: 105px;
+
+    transform:
+        translate(-50%, -50%);
+
+    animation:
+        mascot-idle 2.8s ease-in-out infinite;
+
+    transform-origin:
+        center bottom;
+}
+
+
+/* =========================================================
+   HEAD
+   ========================================================= */
+
+.mascot-head {
+
+    position: absolute;
+
+    left: 17px;
+    top: 5px;
+
+    width: 48px;
+    height: 48px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #ffe5c8,
+            #f5bd91
+        );
+
+    border-radius:
+        48% 48% 45% 45%;
+
+    border:
+        2px solid #1e293b;
+
+    z-index: 4;
+
+    box-shadow:
+        0 3px 0 rgba(15, 23, 42, 0.08);
+}
+
+
+/* =========================================================
+   HAIR
+   ========================================================= */
+
+.mascot-hair {
+
+    position: absolute;
+
+    left: 12px;
+    top: 0;
+
+    width: 58px;
+    height: 35px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #1e293b,
+            #334155
+        );
+
+    border-radius:
+        55% 55% 30% 30%;
+
+    z-index: 6;
+
+    transform:
+        rotate(-3deg);
+}
+
+
+/* Hair spikes */
+
+.mascot-hair::before,
+.mascot-hair::after {
+
+    content: "";
+
+    position: absolute;
+
+    background: #1e293b;
+}
+
+.mascot-hair::before {
+
+    width: 20px;
+    height: 20px;
+
+    left: -5px;
+    top: 18px;
+
+    clip-path:
+        polygon(
+            100% 0,
+            0 100%,
+            100% 75%
+        );
+}
+
+.mascot-hair::after {
+
+    width: 18px;
+    height: 18px;
+
+    right: -4px;
+    top: 16px;
+
+    clip-path:
+        polygon(
+            0 0,
+            100% 100%,
+            0 75%
+        );
+}
+
+
+/* =========================================================
+   EYES
+   ========================================================= */
+
+.mascot-eye {
+
+    position: absolute;
+
+    top: 25px;
+
+    width: 7px;
+    height: 10px;
+
+    background: #172033;
+
+    border-radius: 50%;
+
+    z-index: 7;
+}
+
+.mascot-eye.left {
+    left: 11px;
+}
+
+.mascot-eye.right {
+    right: 11px;
+}
+
+
+/* Eye shine */
+
+.mascot-eye::after {
+
+    content: "";
+
+    position: absolute;
+
+    width: 3px;
+    height: 3px;
+
+    background: white;
+
+    border-radius: 50%;
+
+    left: 1px;
+    top: 1px;
+}
+
+
+/* =========================================================
+   MOUTH
+   ========================================================= */
+
+.mascot-mouth {
+
+    position: absolute;
+
+    left: 20px;
+    top: 38px;
+
+    width: 9px;
+    height: 5px;
+
+    border-bottom:
+        2px solid #7f1d1d;
+
+    border-radius: 0 0 50% 50%;
+
+    z-index: 7;
+}
+
+
+/* =========================================================
+   BODY / SHIRT
+   ========================================================= */
+
+.mascot-body {
+
+    position: absolute;
+
+    left: 14px;
+    top: 51px;
+
+    width: 55px;
+    height: 43px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #2563eb,
+            #1d4ed8
+        );
+
+    border-radius:
+        17px 17px 9px 9px;
+
+    border:
+        2px solid #172554;
+
+    z-index: 2;
+}
+
+
+/* Shirt collar */
+
+.mascot-body::before {
+
+    content: "";
+
+    position: absolute;
+
+    left: 20px;
+    top: 0;
+
+    width: 13px;
+    height: 16px;
+
+    background: white;
+
+    clip-path:
+        polygon(
+            0 0,
+            100% 0,
+            50% 100%
+        );
+}
+
+
+/* =========================================================
+   TIE
+   ========================================================= */
+
+.mascot-tie {
+
+    position: absolute;
+
+    left: 35px;
+    top: 61px;
+
+    width: 8px;
+    height: 23px;
+
+    background:
+        linear-gradient(
+            #0f172a,
+            #334155
+        );
+
+    clip-path:
+        polygon(
+            20% 0,
+            80% 0,
+            100% 100%,
+            50% 82%,
+            0 100%
+        );
+
+    z-index: 5;
+}
+
+
+/* =========================================================
+   LEFT ARM
+   ========================================================= */
+
+.mascot-arm-left {
+
+    position: absolute;
+
+    left: 5px;
+    top: 55px;
+
+    width: 16px;
+    height: 40px;
+
+    background: #2563eb;
+
+    border:
+        2px solid #172554;
+
+    border-radius: 12px;
+
+    transform:
+        rotate(15deg);
+
+    transform-origin:
+        top center;
+
+    z-index: 1;
+}
+
+
+/* =========================================================
+   RIGHT ARM
+   ========================================================= */
+
+.mascot-arm-right {
+
+    position: absolute;
+
+    right: 3px;
+    top: 55px;
+
+    width: 16px;
+    height: 40px;
+
+    background: #2563eb;
+
+    border:
+        2px solid #172554;
+
+    border-radius: 12px;
+
+    transform:
+        rotate(-15deg);
+
+    transform-origin:
+        top center;
+
+    z-index: 1;
+}
+
+
+/* =========================================================
+   HANDS
+   ========================================================= */
+
+.mascot-hand {
+
+    position: absolute;
+
+    width: 12px;
+    height: 12px;
+
+    background: #ffe5c8;
+
+    border:
+        1px solid #c08457;
+
+    border-radius: 50%;
+
+    z-index: 4;
+}
+
+
+/* =========================================================
+   LEGS
+   ========================================================= */
+
+.mascot-leg-left {
+
+    position: absolute;
+
+    left: 23px;
+    top: 90px;
+
+    width: 13px;
+    height: 25px;
+
+    background: #172033;
+
+    border-radius:
+        5px 5px 8px 8px;
+
+    transform:
+        rotate(7deg);
+
+    z-index: 1;
+}
+
+
+.mascot-leg-right {
+
+    position: absolute;
+
+    right: 23px;
+    top: 90px;
+
+    width: 13px;
+    height: 25px;
+
+    background: #172033;
+
+    border-radius:
+        5px 5px 8px 8px;
+
+    transform:
+        rotate(-7deg);
+
+    z-index: 1;
+}
+
+
+/* =========================================================
+   FLOATING SPEECH BUBBLE
+   ========================================================= */
+
+.mascot-message {
+
+    position: absolute;
+
+    right: 82px;
+    bottom: 105px;
+
+    min-width: 155px;
+
+    max-width: 210px;
+
+    padding:
+        9px 13px;
+
+    background: white;
+
+    color: #172554;
+
+    font-size: 12px;
+
+    font-weight: 600;
+
+    line-height: 1.4;
+
+    border-radius: 13px;
+
+    border:
+        1px solid #bfdbfe;
+
+    box-shadow:
+        0 8px 25px rgba(
+            15,
+            23,
+            42,
+            0.14
+        );
+
+    opacity: 0;
+
+    transform:
+        translateY(8px)
+        scale(0.92);
+
+    transition:
+        opacity 0.25s ease,
+        transform 0.25s ease;
+}
+
+
+/* Bubble pointer */
+
+.mascot-message::after {
+
+    content: "";
+
+    position: absolute;
+
+    right: -9px;
+
+    bottom: 13px;
+
+    width: 18px;
+    height: 18px;
+
+    background: white;
+
+    border-right:
+        1px solid #bfdbfe;
+
+    border-top:
+        1px solid #bfdbfe;
+
+    transform:
+        rotate(45deg);
+}
+
+
+.mascot-message.show {
+
+    opacity: 1;
+
+    transform:
+        translateY(0)
+        scale(1);
+}
+
+
+/* =========================================================
+   SPARKLES
+   ========================================================= */
+
+.mascot-sparkle {
+
+    position: absolute;
+
+    width: 8px;
+    height: 8px;
+
+    background: #fbbf24;
+
+    clip-path:
+        polygon(
+            50% 0,
+            62% 38%,
+            100% 50%,
+            62% 62%,
+            50% 100%,
+            38% 62%,
+            0 50%,
+            38% 38%
+        );
+
+    animation:
+        sparkle-float 1.7s ease-in-out infinite;
+}
+
+
+.mascot-sparkle.one {
+
+    right: 5px;
+    top: 22px;
+}
+
+
+.mascot-sparkle.two {
+
+    left: 2px;
+    top: 55px;
+
+    width: 6px;
+    height: 6px;
+
+    animation-delay:
+        0.4s;
+}
+
+
+.mascot-sparkle.three {
+
+    right: 18px;
+    top: 65px;
+
+    width: 5px;
+    height: 5px;
+
+    animation-delay:
+        0.8s;
+}
+
+
+@keyframes sparkle-float {
+
+    0%,
+    100% {
+
+        opacity: 0.4;
+
+        transform:
+            scale(0.7)
+            rotate(0deg);
+    }
+
+    50% {
+
+        opacity: 1;
+
+        transform:
+            scale(1.2)
+            rotate(90deg);
+    }
+}
+
+
+/* =========================================================
+   IDLE ANIMATION
+   ========================================================= */
+
+@keyframes mascot-idle {
+
+    0%,
+    100% {
+
+        transform:
+            translateY(0)
+            rotate(0deg);
+    }
+
+    50% {
+
+        transform:
+            translateY(-6px)
+            rotate(-1deg);
+    }
+}
+
+
+/* =========================================================
+   WAVE
+   ========================================================= */
+
+#merchant-mascot.mascot-wave
+.mascot-arm-right {
+
+    animation:
+        mascot-wave 0.45s ease-in-out
+        4;
+}
+
+
+@keyframes mascot-wave {
+
+    0% {
+        transform: rotate(-15deg);
+    }
+
+    50% {
+        transform: rotate(-65deg);
+    }
+
+    100% {
+        transform: rotate(-15deg);
+    }
+}
+
+
+/* =========================================================
+   SEARCH / RUNNING
+   ========================================================= */
+
+#merchant-mascot.mascot-search
+.mascot-character {
+
+    animation:
+        mascot-running 0.45s
+        ease-in-out
+        infinite;
+}
+
+
+@keyframes mascot-running {
+
+    0% {
+
+        transform:
+            translateX(0)
+            translateY(0)
+            rotate(-2deg);
+    }
+
+    50% {
+
+        transform:
+            translateX(8px)
+            translateY(-5px)
+            rotate(3deg);
+    }
+
+    100% {
+
+        transform:
+            translateX(0)
+            translateY(0)
+            rotate(-2deg);
+    }
+}
+
+
+/* =========================================================
+   SUCCESS
+   ========================================================= */
+
+#merchant-mascot.mascot-success
+.mascot-character {
+
+    animation:
+        mascot-success 0.65s
+        ease-in-out
+        3;
+}
+
+
+@keyframes mascot-success {
+
+    0% {
+
+        transform:
+            translateY(0)
+            scale(1);
+    }
+
+    50% {
+
+        transform:
+            translateY(-15px)
+            scale(1.08);
+    }
+
+    100% {
+
+        transform:
+            translateY(0)
+            scale(1);
+    }
+}
+
+
+/* =========================================================
+   ERROR
+   ========================================================= */
+
+#merchant-mascot.mascot-error
+.mascot-character {
+
+    animation:
+        mascot-error 0.35s
+        ease-in-out
+        3;
+}
+
+
+@keyframes mascot-error {
+
+    0% {
+        transform: translateX(0);
+    }
+
+    25% {
+        transform: translateX(-7px);
+    }
+
+    75% {
+        transform: translateX(7px);
+    }
+
+    100% {
+        transform: translateX(0);
+    }
+}
+
+
+/* =========================================================
+   WORKING
+   ========================================================= */
+
+#merchant-mascot.mascot-working
+.mascot-character {
+
+    animation:
+        mascot-working 0.8s
+        ease-in-out
+        infinite;
+}
+
+
+@keyframes mascot-working {
+
+    0%,
+    100% {
+
+        transform:
+            translateY(0)
+            rotate(-2deg);
+    }
+
+    50% {
+
+        transform:
+            translateY(-4px)
+            rotate(2deg);
+    }
+}
+
+
+/* =========================================================
+   FLOATING FROM SIDE
+   ========================================================= */
+
+.mascot-enter-left {
+
+    animation:
+        mascot-enter-left 0.7s
+        cubic-bezier(
+            0.175,
+            0.885,
+            0.32,
+            1.275
+        );
+}
+
+
+@keyframes mascot-enter-left {
+
+    from {
+
+        transform:
+            translateX(-120px)
+            rotate(-15deg);
+    }
+
+    to {
+
+        transform:
+            translateX(0)
+            rotate(0);
+    }
+}
+
+
+/* =========================================================
+   CONFETTI
+   ========================================================= */
+
+.mascot-confetti {
+
+    position: fixed;
+
+    width: 7px;
+    height: 12px;
+
+    z-index: 10000;
+
+    pointer-events: none;
+
+    animation:
+        confetti-fall
+        1.4s
+        ease-out
+        forwards;
+}
+
+
+@keyframes confetti-fall {
+
+    0% {
+
+        opacity: 1;
+
+        transform:
+            translateY(0)
+            rotate(0deg);
+    }
+
+    100% {
+
+        opacity: 0;
+
+        transform:
+            translateY(180px)
+            rotate(520deg);
+    }
+}
+
+
+/* =========================================================
+   CURSOR FOLLOWING MINI SPARK
+   ========================================================= */
+
+.mascot-cursor-spark {
+
+    position: fixed;
+
+    width: 6px;
+    height: 6px;
+
+    background: #60a5fa;
+
+    border-radius: 50%;
+
+    pointer-events: none;
+
+    z-index: 9997;
+
+    opacity: 0.7;
+
+    transform:
+        translate(-50%, -50%);
+
+    animation:
+        cursor-spark 0.55s
+        ease-out
+        forwards;
+}
+
+
+@keyframes cursor-spark {
+
+    from {
+
+        opacity: 0.8;
+
+        transform:
+            translate(-50%, -50%)
+            scale(1);
+    }
+
+    to {
+
+        opacity: 0;
+
+        transform:
+            translate(-50%, -50%)
+            scale(2.5);
+    }
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 650px) {
+
+    #merchant-mascot {
+
+        right: 8px;
+        bottom: 10px;
+
+        transform:
+            scale(0.75);
+    }
+
+    .mascot-message {
+
+        right: 70px;
+
+        max-width: 170px;
+    }
+}
+
+
+/* =========================================================
+   REDUCE MOTION
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+    #merchant-mascot,
+    .mascot-character,
+    .mascot-sparkle,
+    .mascot-confetti {
+
+        animation: none !important;
+
+        transition: none !important;
+    }
+}

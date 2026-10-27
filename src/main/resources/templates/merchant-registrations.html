@@ -1,0 +1,2164 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Created Merchant IDs</title>
+
+    <link rel="stylesheet"
+          th:href="@{/css/merchant.css}">
+		  
+	<link rel="stylesheet" href="/css/merchant-animations.css">
+	
+	<link rel="stylesheet" href="/css/merchant-characters.css">
+	
+	<style>
+		/* =========================================================
+		   DOWNLOAD CONFIRMATION MODAL
+		   ========================================================= */
+
+		.download-modal-overlay {
+
+		    display: none;
+
+		    position: fixed !important;
+
+		    inset: 0 !important;
+
+		    width: 100vw !important;
+		    height: 100vh !important;
+
+		    z-index: 999999 !important;
+
+		    align-items: center;
+		    justify-content: center;
+
+		    padding: 20px;
+
+		    box-sizing: border-box;
+
+		    background: rgba(15, 23, 42, 0.55);
+
+		    overflow: hidden !important;
+
+		    overscroll-behavior: none;
+
+		}
+
+
+		.download-modal-overlay.show {
+
+		    display: flex !important;
+
+		}
+
+
+		/* =========================================================
+		   MAIN POPUP
+		   ========================================================= */
+
+		.download-modal {
+
+		    position: relative;
+
+		    width: 900px;
+
+		    max-width: 94vw;
+
+		    max-height: calc(100vh - 40px);
+
+		    padding: 36px 45px 32px;
+
+		    box-sizing: border-box;
+
+		    border-radius: 24px;
+
+		    background: #ffffff;
+
+		    box-shadow:
+		        0 30px 80px rgba(0, 0, 0, 0.28);
+
+		    overflow: hidden;
+
+		    text-align: center;
+
+		}
+
+
+		/* =========================================================
+		   BACK BUTTON
+		   ========================================================= */
+
+		.download-modal-back {
+
+		    position: absolute;
+
+		    top: 20px;
+		    left: 22px;
+
+		    width: 48px;
+		    height: 48px;
+
+		    border: none;
+
+		    border-radius: 50%;
+
+		    background: transparent;
+
+		    font-size: 25px;
+
+		    font-weight: 700;
+
+		    cursor: pointer;
+
+		    display: flex;
+
+		    align-items: center;
+		    justify-content: center;
+
+		    transition:
+		        background 0.2s ease,
+		        transform 0.2s ease;
+
+		}
+
+
+		.download-modal-back:hover {
+
+		    background: rgba(0, 0, 0, 0.08);
+
+		    transform: translateX(-3px);
+
+		}
+
+
+		.download-modal-back:active {
+
+		    transform: scale(0.92);
+
+		}
+
+
+		/* =========================================================
+		   TITLE
+		   ========================================================= */
+
+		.download-modal-title-area {
+
+		    display: flex;
+
+		    flex-direction: column;
+
+		    align-items: center;
+
+		    justify-content: center;
+
+		    gap: 8px;
+
+		    margin-bottom: 22px;
+
+		}
+
+
+		.download-modal-icon {
+
+		    font-size: 42px;
+
+		    line-height: 1;
+
+		}
+
+
+		.download-modal-title-area h2 {
+
+		    margin: 0;
+
+		    font-size: 27px;
+
+		    font-weight: 800;
+
+		    letter-spacing: 0.5px;
+
+		}
+
+
+		/* =========================================================
+		   PREVIEW AREA
+		   ========================================================= */
+
+		.download-preview {
+
+		    width: 100%;
+
+		    height: 270px;
+
+		    border-radius: 18px;
+
+		    box-sizing: border-box;
+
+		    display: flex;
+
+		    align-items: center;
+
+		    justify-content: center;
+
+		    margin-bottom: 25px;
+
+		    overflow: hidden;
+
+		}
+
+
+		/* =========================================================
+		   EXCEL PREVIEW
+		   ========================================================= */
+
+		.excel-preview {
+
+		    background: #f3f7f4;
+
+		    border: 1px solid #d9e6dc;
+
+		    flex-direction: column;
+
+		    padding: 24px;
+
+		}
+
+
+		.excel-preview-top {
+
+		    width: 100%;
+
+		    display: flex;
+
+		    align-items: center;
+
+		    gap: 15px;
+
+		    margin-bottom: 18px;
+
+		}
+
+
+		.excel-preview-icon {
+
+		    width: 58px;
+		    height: 58px;
+
+		    border-radius: 12px;
+
+		    display: flex;
+
+		    align-items: center;
+		    justify-content: center;
+
+		    font-size: 32px;
+
+		    background: #ffffff;
+
+		    box-shadow:
+		        0 5px 15px rgba(0, 0, 0, 0.08);
+
+		}
+
+
+		.excel-preview-title {
+
+		    font-size: 18px;
+
+		    font-weight: 800;
+
+		    text-align: left;
+
+		}
+
+
+		.excel-preview-subtitle {
+
+		    font-size: 13px;
+
+		    opacity: 0.65;
+
+		    text-align: left;
+
+		    margin-top: 3px;
+
+		}
+
+
+		.excel-preview-table {
+
+		    width: 100%;
+
+		    background: #ffffff;
+
+		    border-radius: 10px;
+
+		    overflow: hidden;
+
+		    border: 1px solid #dce4df;
+
+		}
+
+
+		.excel-row {
+
+		    display: grid;
+
+		    grid-template-columns:
+		        1.5fr
+		        1fr
+		        1fr;
+
+		    min-height: 34px;
+
+		    align-items: center;
+
+		    border-bottom: 1px solid #e8ece9;
+
+		    font-size: 12px;
+
+		    text-align: left;
+
+		}
+
+
+		.excel-row:last-child {
+
+		    border-bottom: none;
+
+		}
+
+
+		.excel-row span {
+
+		    padding: 7px 12px;
+
+		    overflow: hidden;
+
+		    text-overflow: ellipsis;
+
+		    white-space: nowrap;
+
+		}
+
+
+		.excel-header {
+
+		    font-weight: 700;
+
+		    background: #eef3ef;
+
+		}
+
+
+		/* =========================================================
+		   PDF PREVIEW
+		   ========================================================= */
+
+		.pdf-preview {
+
+		    background: #f5f6f8;
+
+		    border: 1px solid #e0e2e6;
+
+		    padding: 20px;
+
+		}
+
+
+		.pdf-paper {
+
+		    width: 460px;
+
+		    max-width: 80%;
+
+		    min-height: 220px;
+
+		    background: #ffffff;
+
+		    border-radius: 4px;
+
+		    padding: 22px 28px;
+
+		    box-sizing: border-box;
+
+		    box-shadow:
+		        0 8px 25px rgba(0, 0, 0, 0.14);
+
+		    text-align: left;
+
+		}
+
+
+		.pdf-paper-header {
+
+		    display: flex;
+
+		    align-items: center;
+
+		    gap: 13px;
+
+		}
+
+
+		.pdf-file-icon {
+
+		    font-size: 34px;
+
+		}
+
+
+		.pdf-report-title {
+
+		    font-size: 17px;
+
+		    font-weight: 800;
+
+		}
+
+
+		.pdf-report-subtitle {
+
+		    font-size: 10px;
+
+		    opacity: 0.6;
+
+		    margin-top: 3px;
+
+		}
+
+
+		.pdf-line {
+
+		    height: 1px;
+
+		    background: #dfe2e6;
+
+		    margin: 15px 0;
+
+		}
+
+
+		.pdf-report-row {
+
+		    display: flex;
+
+		    justify-content: space-between;
+
+		    gap: 20px;
+
+		    font-size: 11px;
+
+		    padding: 5px 0;
+
+		}
+
+
+		.pdf-report-row span:first-child {
+
+		    font-weight: 700;
+
+		}
+
+
+		.pdf-report-row span:last-child {
+
+		    text-align: right;
+
+		}
+
+
+		.pdf-report-footer {
+
+		    font-size: 9px;
+
+		    opacity: 0.55;
+
+		    text-align: center;
+
+		}
+
+
+		/* =========================================================
+		   MESSAGE
+		   ========================================================= */
+
+		.download-modal-message h3 {
+
+		    margin: 0 0 7px;
+
+		    font-size: 19px;
+
+		    font-weight: 750;
+
+		}
+
+
+		.download-modal-message p {
+
+		    margin: 0 auto;
+
+		    max-width: 650px;
+
+		    font-size: 14px;
+
+		    line-height: 1.6;
+
+		    opacity: 0.7;
+
+		}
+
+
+		/* =========================================================
+		   ACTION BUTTONS
+		   ========================================================= */
+
+		.download-modal-actions {
+
+		    display: flex;
+
+		    justify-content: center;
+
+		    gap: 14px;
+
+		    margin-top: 25px;
+
+		}
+
+
+		.download-cancel-button,
+		.download-confirm-button {
+
+		    min-width: 145px;
+
+		    height: 46px;
+
+		    padding: 0 25px;
+
+		    border-radius: 10px;
+
+		    border: none;
+
+		    font-size: 14px;
+
+		    font-weight: 700;
+
+		    cursor: pointer;
+
+		    transition:
+		        transform 0.2s ease,
+		        box-shadow 0.2s ease;
+
+		}
+
+
+		.download-cancel-button {
+
+		    background: #edf0f3;
+
+		    color: #333;
+
+		}
+
+
+		.download-confirm-button {
+
+		    background: #2563eb;
+
+		    color: #ffffff;
+
+		}
+
+
+		.download-cancel-button:hover,
+		.download-confirm-button:hover {
+
+		    transform: translateY(-2px);
+
+		    box-shadow:
+		        0 8px 20px rgba(0, 0, 0, 0.12);
+
+		}
+
+
+		/* =========================================================
+		   PREVENT BACKGROUND SCROLL
+		   ========================================================= */
+
+		html.download-modal-open,
+		body.download-modal-open {
+
+		    overflow: hidden !important;
+
+		}
+
+
+		/* =========================================================
+		   MOBILE
+		   ========================================================= */
+
+		@media (max-width: 700px) {
+
+		    .download-modal {
+
+		        width: 96vw;
+
+		        padding: 32px 20px 24px;
+
+		    }
+
+
+		    .download-preview {
+
+		        height: 230px;
+
+		    }
+
+
+		    .pdf-paper {
+
+		        max-width: 90%;
+
+		        padding: 16px;
+
+		    }
+
+
+		    .download-modal-actions {
+
+		        flex-direction: column;
+
+		    }
+
+
+		    .download-cancel-button,
+		    .download-confirm-button {
+
+		        width: 100%;
+
+		    }
+
+		}
+		
+		.download-modal-back {
+		    width: 58px;
+		    height: 58px;
+
+		    display: flex;
+		    align-items: center;
+		    justify-content: center;
+
+		    border: none;
+		    border-radius: 16px;
+
+		    background: linear-gradient(135deg, #0d47a1, #1976d2);
+		    color: white;
+
+		    font-size: 30px;
+		    font-weight: 800;
+
+		    cursor: pointer;
+
+		    box-shadow:
+		        0 8px 20px rgba(13, 71, 161, 0.30),
+		        inset 0 1px 0 rgba(255,255,255,0.25);
+
+		    transition:
+		        transform 0.25s ease,
+		        box-shadow 0.25s ease,
+		        background 0.25s ease;
+		}
+
+		.download-modal-back:hover {
+		    transform: translateX(-5px) scale(1.08);
+
+		    box-shadow:
+		        0 12px 28px rgba(13, 71, 161, 0.40),
+		        inset 0 1px 0 rgba(255,255,255,0.30);
+		}
+
+		.download-modal-back:active {
+		    transform: translateX(-2px) scale(0.96);
+		}
+		
+		.page-container {
+		    width: 100%;
+		    max-width: 1800px;
+		    margin-left: auto;
+		    margin-right: auto;
+		    padding-left: 24px;
+		    padding-right: 24px;
+		    box-sizing: border-box;
+		}
+
+		.table-card {
+		    width: 100%;
+		    box-sizing: border-box;
+		}
+	</style>
+
+</head>
+
+<body>
+
+
+<header class="topbar">
+
+    <a href="/merchant-registration"
+       class="brand">
+
+        <div class="brand-logo">
+            QR
+        </div>
+
+        <div class="brand-text">
+
+            <div class="brand-title">
+                Merchant QR Portal
+            </div>
+
+            <div class="brand-subtitle">
+                Merchant Registration System
+            </div>
+
+        </div>
+
+    </a>
+
+
+    <nav class="nav-links">
+
+        <a href="/merchant-registration"
+           class="nav-link">
+
+            <span>＋</span>
+            <span>New Registration</span>
+
+        </a>
+
+
+        <a href="/merchant-registrations"
+           class="nav-link active">
+
+            <span>▦</span>
+            <span>Created IDs</span>
+
+        </a>
+
+    </nav>
+
+</header>
+
+
+<main class="page-container">
+
+
+    <!-- =====================================================
+         PAGE HEADER
+         ===================================================== -->
+
+    <section class="page-header">
+
+        <div class="page-header-row">
+
+            <div>
+
+                <h1 class="page-title">
+                    Created Merchant IDs
+                </h1>
+
+                <p class="page-description">
+                    View, search and manage registered merchant
+                    records. By default, today's registrations
+                    are displayed.
+                </p>
+
+            </div>
+
+
+            <a
+                href="/merchant-registration"
+                class="btn btn-primary">
+
+                + New Registration
+
+            </a>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         EXPORT PANEL
+         ===================================================== -->
+
+    <section class="export-card">
+
+        <div class="export-icon">
+            DB
+        </div>
+
+
+        <div class="export-content">
+
+            <h2>
+                Database Export
+                <span>
+                    (All Records)
+                </span>
+            </h2>
+
+            <p>
+                Download the complete merchant registration
+                database. These downloads are not affected by
+                search, date filters or pagination.
+            </p>
+
+        </div>
+
+
+		<button
+		    type="button"
+		    class="btn btn-excel"
+		    id="downloadExcelButton">
+
+		    ↓
+		    Download Excel
+
+		</button>
+
+
+		<button
+		    type="button"
+		    class="btn btn-pdf"
+		    id="downloadPdfButton">
+
+		    ↓
+		    Download PDF
+
+		</button>
+
+    </section>
+
+
+    <!-- =====================================================
+         SUMMARY CARDS
+         ===================================================== -->
+
+    <section class="summary-grid">
+
+
+        <div class="summary-card">
+
+            <div class="summary-icon">
+                #
+            </div>
+
+            <div
+                class="summary-value"
+                th:text="${pageData.totalElements}">
+                0
+            </div>
+
+            <div class="summary-label">
+                Records Shown by Current Filter
+            </div>
+
+        </div>
+
+
+        <div class="summary-card">
+
+            <div class="summary-icon">
+                ◷
+            </div>
+
+            <div
+                class="summary-value"
+                th:text="${defaultView ? 'Today' : 'Filtered'}">
+                Today
+            </div>
+
+            <div class="summary-label">
+                Current View
+            </div>
+
+        </div>
+
+
+        <div class="summary-card">
+
+            <div class="summary-icon">
+                ▦
+            </div>
+
+            <div
+                class="summary-value"
+                th:text="${pageData.totalPages}">
+                1
+            </div>
+
+            <div class="summary-label">
+                Total Pages
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         SEARCH & FILTER
+         ===================================================== -->
+
+    <section class="card filter-card">
+
+
+        <div class="card-header">
+
+            <div class="card-title-area">
+
+                <div class="card-icon">
+                    ⌕
+                </div>
+
+                <div>
+
+                    <h2 class="card-title">
+                        Search & Filter
+                    </h2>
+
+                    <p class="card-subtitle">
+                        Search by merchant information or
+                        filter registrations by date.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="card-body">
+
+            <form
+                method="get"
+                action="/merchant-registrations">
+
+
+				<div class="filter-grid">
+
+
+				    <!-- =================================================
+				         SEARCH
+				         ================================================= -->
+
+				    <div class="form-group">
+
+				        <label
+				            class="form-label"
+				            for="search">
+
+				            Search
+
+				        </label>
+
+				        <input
+				            type="text"
+				            id="search"
+				            name="search"
+				            class="form-control"
+				            th:value="${search}"
+				            placeholder="Merchant name, account, ID, city or country">
+
+				    </div>
+
+
+				    <!-- =================================================
+				         MERCHANT TYPE
+				         ================================================= -->
+
+				    <div class="form-group">
+
+				        <label
+				            class="form-label"
+				            for="merchantType">
+
+				            Merchant Type
+
+				        </label>
+
+				        <select
+				            id="merchantType"
+				            name="merchantType"
+				            class="form-control">
+
+				            <option
+				                value=""
+				                th:selected="${merchantType == null || merchantType == ''}">
+
+				                All Merchant Types
+
+				            </option>
+
+
+				            <option
+				                th:each="type : ${merchantTypes}"
+				                th:value="${type}"
+				                th:text="${type}"
+				                th:selected="${type == merchantType}">
+
+				                Retail
+
+				            </option>
+
+				        </select>
+
+				    </div>
+
+
+				    <!-- =================================================
+				         FROM DATE
+				         ================================================= -->
+
+				    <div class="form-group">
+
+				        <label
+				            class="form-label"
+				            for="fromDate">
+
+				            From Date
+
+				        </label>
+
+				        <input
+				            type="date"
+				            id="fromDate"
+				            name="fromDate"
+				            class="form-control"
+				            th:value="${fromDate}">
+
+				    </div>
+
+
+				    <!-- =================================================
+				         TO DATE
+				         ================================================= -->
+
+				    <div class="form-group">
+
+				        <label
+				            class="form-label"
+				            for="toDate">
+
+				            To Date
+
+				        </label>
+
+				        <input
+				            type="date"
+				            id="toDate"
+				            name="toDate"
+				            class="form-control"
+				            th:value="${toDate}">
+
+				        <div
+				            th:if="${error}"
+				            class="filter-error"
+				            role="alert">
+				            <span class="filter-error-icon">!</span>
+				            <span th:text="${error}">Error message</span>
+				        </div>
+
+				    </div>
+
+
+				    <!-- =================================================
+				         ACTIONS
+				         ================================================= -->
+
+				    <div class="filter-actions">
+
+				        <button
+				            type="submit"
+				            class="btn btn-blue">
+
+				            Search
+
+				        </button>
+
+
+				        <a
+				            href="/merchant-registrations"
+				            class="btn btn-light">
+
+				            Clear
+
+				        </a>
+
+
+				        <a
+				            href="/merchant-registrations"
+				            class="btn btn-default-view">
+
+				            ↻
+
+				            View Default
+
+				            <small>
+				                Today's Records
+				            </small>
+
+				        </a>
+
+				    </div>
+
+				</div>
+
+            </form>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         REGISTRATION TABLE
+         ===================================================== -->
+
+    <section class="card table-card">
+
+
+        <div class="table-heading-bar">
+
+            <div class="card-title-area">
+
+                <div class="card-icon">
+                    ▦
+                </div>
+
+                <div>
+
+                    <h2 class="card-title">
+                        Merchant Registrations
+                    </h2>
+
+                    <p class="card-subtitle">
+
+                        <span
+                            th:if="${defaultView}">
+                            Today's Records
+                        </span>
+
+                        <span
+                            th:unless="${defaultView}">
+                            Filtered Records
+                        </span>
+
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="records-count">
+
+                <span
+                    th:text="${pageData.numberOfElements}">
+                    0
+                </span>
+
+                shown
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             TABLE
+             ================================================= -->
+
+        <div
+            th:if="${pageData != null && pageData.hasContent()}"
+            class="table-wrapper">
+
+
+            <table class="merchant-table">
+
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            SI.No.
+                        </th>
+
+                        <th>
+                            Merchant ID
+                        </th>
+
+                        <th>
+                            Account Number
+                        </th>
+
+                        <th>
+                            Merchant Name
+                        </th>
+
+                        <th>
+                            City
+                        </th>
+
+                        <th>
+                            Country
+                        </th>
+
+                        <th>
+                            Merchant Type
+                        </th>
+
+                        <th>
+                            Mobile
+                        </th>
+
+                        <th>
+                            Email
+                        </th>
+
+                        <th>
+                            Charges
+                        </th>
+
+                        <th>
+                            Created At
+                        </th>
+
+                        <th>
+                            Action
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+
+                    <tr
+                        th:each="registration, stat : ${pageData.content}">
+
+
+                        <!-- SI.NO -->
+
+                        <td>
+
+                            <span
+                                class="serial-number"
+                                th:text="${pageData.number * 10 + stat.index + 1}">
+
+                                1
+
+                            </span>
+
+                        </td>
+
+
+                        <!-- MERCHANT ID -->
+
+                        <td>
+
+                            <span
+                                class="merchant-id"
+                                th:text="${registration.merchantId}">
+
+                                54000001
+
+                            </span>
+
+                        </td>
+
+
+                        <!-- ACCOUNT -->
+
+                        <td>
+
+                            <span
+                                class="account-number"
+                                th:text="${registration.accountNumber}">
+
+                                101000656103
+
+                            </span>
+
+                        </td>
+
+
+                        <!-- NAME -->
+
+                        <td>
+
+                            <span
+                                class="merchant-name-cell"
+                                th:text="${registration.merchantName}">
+
+                                Merchant
+
+                            </span>
+
+                        </td>
+
+
+                        <!-- CITY -->
+
+                        <td
+                            th:text="${registration.city}">
+
+                            DarEsSalaam
+
+                        </td>
+
+
+                        <!-- COUNTRY -->
+
+                        <td>
+
+                            <span
+                                class="country-badge"
+                                th:text="${registration.countryCode}">
+
+                                TZ
+
+                            </span>
+
+                        </td>
+
+
+                        <!-- TYPE -->
+
+                        <td>
+
+                            <span
+                                class="type-badge"
+                                th:text="${registration.merchantType}">
+
+                                Retail
+
+                            </span>
+
+                        </td>
+
+
+                        <!-- MOBILE -->
+
+                        <td
+                            th:text="${registration.mobileNumber}">
+
+                            255759212100
+
+                        </td>
+
+
+                        <!-- EMAIL -->
+
+                        <td
+                            th:text="${registration.emailId}">
+
+                            merchant@email.com
+
+                        </td>
+
+
+                        <!-- CHARGES -->
+
+                        <td
+                            th:text="${registration.charges}">
+
+                            500
+
+                        </td>
+
+
+                        <!-- CREATED -->
+
+                        <td
+                            th:text="${#temporals.format(registration.createdAt, 'dd-MM-yyyy HH:mm')}">
+
+                            30-09-2026 15:00
+
+                        </td>
+
+
+                        <!-- ACTION -->
+
+                        <td>
+
+                            <div class="action-group">
+
+                                <a
+                                    th:href="@{'/merchant-registrations/' + ${registration.id} + '/qr'}"
+                                    target="_blank"
+                                    class="btn btn-small btn-blue">
+
+                                    QR
+
+                                </a>
+
+
+                                <a
+                                    th:href="@{'/merchant-registrations/' + ${registration.id} + '/pdf'}"
+                                    class="btn btn-small btn-light">
+
+                                    PDF
+
+                                </a>
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+        <!-- =================================================
+             EMPTY
+             ================================================= -->
+
+        <div
+            th:if="${pageData == null || !pageData.hasContent()}"
+            class="empty-state">
+
+            <div class="empty-icon">
+                ▦
+            </div>
+
+            <h3 class="empty-title">
+                No Merchant Records Found
+            </h3>
+
+            <p class="empty-description">
+                No registrations match the current view.
+                Try another search/date filter or create
+                a new merchant registration.
+            </p>
+
+            <br>
+
+            <a
+                href="/merchant-registration"
+                class="btn btn-primary">
+
+                + Create Merchant
+
+            </a>
+
+        </div>
+
+
+        <!-- =================================================
+             PAGINATION
+             ================================================= -->
+
+        <div
+            th:if="${pageData != null && pageData.totalPages > 0}"
+            class="pagination-area">
+
+
+            <div class="pagination-info">
+
+                Showing
+
+                <strong
+                    th:text="${pageData.number * 10 + 1}">
+                    1
+                </strong>
+
+                to
+
+                <strong
+                    th:text="${pageData.number * 10 + pageData.numberOfElements}">
+                    10
+                </strong>
+
+                of
+
+                <strong
+                    th:text="${pageData.totalElements}">
+                    10
+                </strong>
+
+                records
+
+            </div>
+
+
+            <div class="pagination-controls">
+
+
+                <!-- PREVIOUS -->
+
+				<a
+				    th:href="@{/merchant-registrations(
+				        page=${pageData.number - 1},
+				        search=${search},
+				        merchantType=${merchantType},
+				        fromDate=${fromDate},
+				        toDate=${toDate}
+				    )}"
+				    class="page-button">
+
+                    ← Previous
+
+                </a>
+
+
+                <span
+                    th:unless="${pageData.hasPrevious()}"
+                    class="page-button disabled">
+
+                    ← Previous
+
+                </span>
+
+
+                <!-- PAGE NUMBERS -->
+
+				<a
+				    th:each="pageNumber : ${#numbers.sequence(0, pageData.totalPages - 1)}"
+				    th:if="${pageNumber >= pageData.number - 2 && pageNumber <= pageData.number + 2}"
+				    th:href="@{/merchant-registrations(
+				        page=${pageNumber},
+				        search=${search},
+				        merchantType=${merchantType},
+				        fromDate=${fromDate},
+				        toDate=${toDate}
+				    )}"
+				    th:classappend="${pageNumber == pageData.number ? ' current' : ''}"
+				    class="page-number"
+				    th:text="${pageNumber + 1}">
+
+                    1
+
+                </a>
+
+
+                <!-- NEXT -->
+
+				<a
+				    th:if="${pageData.hasNext()}"
+				    th:href="@{/merchant-registrations(
+				        page=${pageData.number + 1},
+				        search=${search},
+				        merchantType=${merchantType},
+				        fromDate=${fromDate},
+				        toDate=${toDate}
+				    )}"
+				    class="page-button">
+
+				    Next →
+
+				</a>
+
+                    Next →
+
+                </a>
+
+
+                <span
+                    th:unless="${pageData.hasNext()}"
+                    class="page-button disabled">
+
+                    Next →
+
+                </span>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <footer class="page-footer">
+
+        Merchant QR Registration System
+        &nbsp;•&nbsp;
+        Secure Merchant Management Portal
+
+    </footer>
+	
+	<!-- =========================================================
+	     DOWNLOAD CONFIRMATION MODAL
+	     ========================================================= -->
+
+	<div
+	    id="downloadModal"
+	    class="download-modal-overlay">
+
+	    <div class="download-modal">
+
+	        <!-- BACK BUTTON -->
+	        <button
+	            type="button"
+	            id="downloadModalBackButton"
+	            class="download-modal-back"
+	            title="Back">
+
+	            &lt;--
+
+	        </button>
+
+
+	        <!-- TITLE -->
+	        <div class="download-modal-title-area">
+
+	            <div
+	                id="downloadModalIcon"
+	                class="download-modal-icon">
+
+	                📊
+
+	            </div>
+
+	            <h2 id="downloadModalTitle">
+
+	                DOWNLOAD EXCEL
+
+	            </h2>
+
+	        </div>
+
+
+	        <!-- LARGE PREVIEW -->
+	        <div
+	            id="excelPreview"
+	            class="download-preview excel-preview">
+
+	            <div class="excel-preview-top">
+
+	                <div class="excel-preview-icon">
+	                    📊
+	                </div>
+
+	                <div>
+	                    <div class="excel-preview-title">
+	                        MERCHANT REGISTRATIONS
+	                    </div>
+
+	                    <div class="excel-preview-subtitle">
+	                        Excel Spreadsheet
+	                    </div>
+	                </div>
+
+	            </div>
+
+
+	            <div class="excel-preview-table">
+
+	                <div class="excel-row excel-header">
+
+	                    <span>Merchant Name</span>
+	                    <span>Account No.</span>
+	                    <span>Merchant ID</span>
+
+	                </div>
+
+	                <div class="excel-row">
+
+	                    <span>William Munyaga</span>
+	                    <span>101000...</span>
+	                    <span>54000001</span>
+
+	                </div>
+
+	                <div class="excel-row">
+
+	                    <span>John Michael</span>
+	                    <span>101001...</span>
+	                    <span>54000002</span>
+
+	                </div>
+
+	                <div class="excel-row">
+
+	                    <span>Merchant Demo</span>
+	                    <span>101002...</span>
+	                    <span>54000003</span>
+
+	                </div>
+
+	                <div class="excel-row">
+
+	                    <span>...</span>
+	                    <span>...</span>
+	                    <span>...</span>
+
+	                </div>
+
+	            </div>
+
+	        </div>
+
+
+	        <!-- PDF PREVIEW -->
+	        <div
+	            id="pdfPreview"
+	            class="download-preview pdf-preview">
+
+	            <div class="pdf-paper">
+
+	                <div class="pdf-paper-header">
+
+	                    <div class="pdf-file-icon">
+	                        📄
+	                    </div>
+
+	                    <div>
+
+	                        <div class="pdf-report-title">
+	                            MERCHANT REPORT
+	                        </div>
+
+	                        <div class="pdf-report-subtitle">
+	                            Merchant Registration Database
+	                        </div>
+
+	                    </div>
+
+	                </div>
+
+
+	                <div class="pdf-line"></div>
+
+
+	                <div class="pdf-report-row">
+	                    <span>Merchant Name</span>
+	                    <span>William Munyaga</span>
+	                </div>
+
+	                <div class="pdf-report-row">
+	                    <span>Account Number</span>
+	                    <span>101000656103</span>
+	                </div>
+
+	                <div class="pdf-report-row">
+	                    <span>Merchant ID</span>
+	                    <span>54000001</span>
+	                </div>
+
+	                <div class="pdf-report-row">
+	                    <span>City</span>
+	                    <span>Dar Es Salaam</span>
+	                </div>
+
+	                <div class="pdf-report-row">
+	                    <span>Country</span>
+	                    <span>TZ</span>
+	                </div>
+
+
+	                <div class="pdf-line"></div>
+
+
+	                <div class="pdf-report-footer">
+	                    Complete Merchant Registration Report
+	                </div>
+
+	            </div>
+
+	        </div>
+
+
+	        <!-- MESSAGE -->
+	        <div class="download-modal-message">
+
+	            <h3 id="downloadQuestion">
+	                Download Excel file?
+	            </h3>
+
+	            <p id="downloadDescription">
+
+	                The complete merchant registration database
+	                will be downloaded as an Excel file.
+
+	            </p>
+
+	        </div>
+
+
+	        <!-- ACTION BUTTONS -->
+	        <div class="download-modal-actions">
+
+	            <button
+	                type="button"
+	                id="downloadCancelButton"
+	                class="download-cancel-button">
+
+	                Cancel
+
+	            </button>
+
+
+	            <button
+	                type="button"
+	                id="downloadConfirmButton"
+	                class="download-confirm-button">
+
+	                Download
+
+	            </button>
+
+	        </div>
+
+	    </div>
+
+	</div>
+
+</main>
+
+<script>
+	/* =========================================================
+	   DOWNLOAD CONFIRMATION POPUP
+	   ========================================================= */
+
+	const downloadModal =
+	    document.getElementById("downloadModal");
+
+	const downloadExcelButton =
+	    document.getElementById("downloadExcelButton");
+
+	const downloadPdfButton =
+	    document.getElementById("downloadPdfButton");
+
+	const downloadModalBackButton =
+	    document.getElementById("downloadModalBackButton");
+
+	const downloadCancelButton =
+	    document.getElementById("downloadCancelButton");
+
+	const downloadConfirmButton =
+	    document.getElementById("downloadConfirmButton");
+
+	const downloadModalTitle =
+	    document.getElementById("downloadModalTitle");
+
+	const downloadModalIcon =
+	    document.getElementById("downloadModalIcon");
+
+	const downloadQuestion =
+	    document.getElementById("downloadQuestion");
+
+	const downloadDescription =
+	    document.getElementById("downloadDescription");
+
+	const excelPreview =
+	    document.getElementById("excelPreview");
+
+	const pdfPreview =
+	    document.getElementById("pdfPreview");
+
+
+	let selectedDownloadType = "";
+
+	let selectedDownloadUrl = "";
+
+
+	/* =========================================================
+	   OPEN DOWNLOAD POPUP
+	   ========================================================= */
+
+	function openDownloadModal(
+	    type,
+	    url
+	) {
+
+	    selectedDownloadType = type;
+
+	    selectedDownloadUrl = url;
+
+
+	    if (type === "excel") {
+
+	        downloadModalTitle.textContent =
+	            "DOWNLOAD EXCEL";
+
+	        downloadModalIcon.textContent =
+	            "📊";
+
+	        downloadQuestion.textContent =
+	            "Download Excel file?";
+
+	        downloadDescription.textContent =
+	            "The complete merchant registration database "
+	            + "will be downloaded as an Excel file.";
+
+	        excelPreview.style.display =
+	            "flex";
+
+	        pdfPreview.style.display =
+	            "none";
+
+	    }
+
+
+	    if (type === "pdf") {
+
+	        downloadModalTitle.textContent =
+	            "DOWNLOAD PDF";
+
+	        downloadModalIcon.textContent =
+	            "📄";
+
+	        downloadQuestion.textContent =
+	            "Download PDF file?";
+
+	        downloadDescription.textContent =
+	            "The complete merchant registration database "
+	            + "will be downloaded as a PDF file.";
+
+	        excelPreview.style.display =
+	            "none";
+
+	        pdfPreview.style.display =
+	            "flex";
+
+	    }
+
+
+	    downloadModal.classList.add("show");
+
+	    document.documentElement.classList.add(
+	        "download-modal-open"
+	    );
+
+	    document.body.classList.add(
+	        "download-modal-open"
+	    );
+
+	}
+
+
+	/* =========================================================
+	   CLOSE DOWNLOAD POPUP
+	   ========================================================= */
+
+	function closeDownloadModal() {
+
+	    downloadModal.classList.remove("show");
+
+	    document.documentElement.classList.remove(
+	        "download-modal-open"
+	    );
+
+	    document.body.classList.remove(
+	        "download-modal-open"
+	    );
+
+	    selectedDownloadType = "";
+
+	    selectedDownloadUrl = "";
+
+	}
+
+
+	/* =========================================================
+	   EXCEL BUTTON
+	   ========================================================= */
+
+	if (downloadExcelButton) {
+
+	    downloadExcelButton.addEventListener(
+	        "click",
+	        function () {
+
+	            openDownloadModal(
+	                "excel",
+	                "/merchant-registrations/export/excel"
+	            );
+
+	        }
+	    );
+
+	}
+
+
+	/* =========================================================
+	   PDF BUTTON
+	   ========================================================= */
+
+	if (downloadPdfButton) {
+
+	    downloadPdfButton.addEventListener(
+	        "click",
+	        function () {
+
+	            openDownloadModal(
+	                "pdf",
+	                "/merchant-registrations/export/pdf"
+	            );
+
+	        }
+	    );
+
+	}
+
+
+	/* =========================================================
+	   BACK BUTTON
+	   ========================================================= */
+
+	if (downloadModalBackButton) {
+
+	    downloadModalBackButton.addEventListener(
+	        "click",
+	        function () {
+
+	            closeDownloadModal();
+
+	        }
+	    );
+
+	}
+
+
+	/* =========================================================
+	   CANCEL BUTTON
+	   ========================================================= */
+
+	if (downloadCancelButton) {
+
+	    downloadCancelButton.addEventListener(
+	        "click",
+	        function () {
+
+	            closeDownloadModal();
+
+	        }
+	    );
+
+	}
+
+
+	/* =========================================================
+	   DOWNLOAD BUTTON
+	   ========================================================= */
+
+	if (downloadConfirmButton) {
+
+	    downloadConfirmButton.addEventListener(
+	        "click",
+	        function () {
+
+	            if (!selectedDownloadUrl) {
+
+	                return;
+
+	            }
+
+
+	            downloadConfirmButton.disabled =
+	                true;
+
+	            downloadConfirmButton.textContent =
+	                "Preparing...";
+
+
+	            /*
+	             * Small delay allows the user to see
+	             * the processing state before download.
+	             */
+
+	            setTimeout(
+	                function () {
+
+	                    const link =
+	                        document.createElement("a");
+
+	                    link.href =
+	                        selectedDownloadUrl;
+
+	                    link.style.display =
+	                        "none";
+
+	                    document.body.appendChild(
+	                        link
+	                    );
+
+	                    link.click();
+
+	                    document.body.removeChild(
+	                        link
+	                    );
+
+
+	                    downloadConfirmButton.disabled =
+	                        false;
+
+	                    downloadConfirmButton.textContent =
+	                        "Download";
+
+
+	                    closeDownloadModal();
+
+	                },
+	                500
+	            );
+
+	        }
+	    );
+
+	}
+
+
+	/* =========================================================
+	   CLICK OUTSIDE POPUP
+	   ========================================================= */
+
+	if (downloadModal) {
+
+	    downloadModal.addEventListener(
+	        "click",
+	        function (event) {
+
+	            if (
+	                event.target ===
+	                downloadModal
+	            ) {
+
+	                closeDownloadModal();
+
+	            }
+
+	        }
+	    );
+
+	}
+</script>
+
+<script src="/js/merchant-animations.js"></script>
+
+<script src="/js/merchant-characters.js"></script>
+</body>
+
+</body>
+
+</html>

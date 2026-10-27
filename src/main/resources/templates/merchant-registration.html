@@ -1,0 +1,2707 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Merchant QR Registration</title>
+
+    <link rel="stylesheet" th:href="@{/css/merchant.css}">
+    <link rel="stylesheet" href="/css/merchant-animations.css">
+    <link rel="stylesheet" href="/css/merchant-characters.css">
+
+    <style>
+		
+		/* =========================================================
+		   MODAL BACK ARROW
+		   ========================================================= */
+
+		.download-modal-back {
+		    position: absolute;
+		    top: 24px;
+		    left: 24px;
+
+		    width: 52px;
+		    height: 52px;
+
+		    display: flex;
+		    align-items: center;
+		    justify-content: center;
+
+		    padding: 0;
+
+		    border: 1px solid rgba(37, 99, 235, 0.15);
+		    border-radius: 15px;
+
+		    background: linear-gradient(
+		        145deg,
+		        #ffffff,
+		        #eef4ff
+		    );
+
+		    color: #123b78;
+
+		    cursor: pointer;
+
+		    box-shadow:
+		        0 6px 16px rgba(15, 55, 100, 0.12),
+		        inset 0 1px 0 rgba(255, 255, 255, 0.9);
+
+		    transition:
+		        transform 0.22s ease,
+		        box-shadow 0.22s ease,
+		        background 0.22s ease,
+		        color 0.22s ease;
+		}
+
+		/* Arrow itself */
+		.download-modal-back .back-arrow {
+		    display: block;
+
+		    font-family:
+		        Arial,
+		        Helvetica,
+		        sans-serif;
+
+		    font-size: 32px;
+		    font-weight: 400;
+
+		    line-height: 1;
+
+		    transform: translateX(-1px);
+		}
+
+		/* Hover */
+		.download-modal-back:hover {
+		    background: linear-gradient(
+		        145deg,
+		        #2563eb,
+		        #123b78
+		    );
+
+		    color: #ffffff;
+
+		    transform: translateX(-3px) scale(1.06);
+
+		    box-shadow:
+		        0 10px 24px rgba(37, 99, 235, 0.30),
+		        inset 0 1px 0 rgba(255, 255, 255, 0.20);
+		}
+
+		/* Arrow moves slightly left on hover */
+		.download-modal-back:hover .back-arrow {
+		    transform: translateX(-3px);
+		}
+
+		/* Click */
+		.download-modal-back:active {
+		    transform: translateX(-2px) scale(0.96);
+
+		    box-shadow:
+		        0 4px 10px rgba(37, 99, 235, 0.20);
+		}
+
+		/* Keyboard accessibility */
+		.download-modal-back:focus-visible {
+		    outline: 3px solid rgba(37, 99, 235, 0.25);
+		    outline-offset: 3px;
+		}
+		
+		/* =========================================================
+		   LOCK MAIN PAGE WHEN MODAL IS OPEN
+		   ========================================================= */
+
+		html.modal-open,
+		body.modal-open {
+		    overflow: hidden !important;
+		    height: 100% !important;
+		}
+		
+		html.modal-open,
+		body.modal-open {
+		    overflow: hidden !important;
+		}
+
+		body.modal-open {
+		    position: fixed;
+		    width: 100%;
+		}
+
+		/* =========================================================
+		   FIXED MODAL BEHAVIOR
+		   ========================================================= */
+
+		#confirmModal,
+		#actionConfirmModal,
+		#qrModal {
+		    position: fixed;
+		    inset: 0;
+		    width: 100%;
+		    height: 100%;
+		    box-sizing: border-box;
+		    align-items: center;
+		    justify-content: center;
+		    padding: 20px;
+		    overflow: hidden !important;
+		    overscroll-behavior: none;
+		}
+
+
+		/* Hide scrollbar completely inside modal */
+
+		#confirmModal *,
+		#actionConfirmModal *,
+		#qrModal * {
+		    scrollbar-width: none;
+		}
+
+		#confirmModal *::-webkit-scrollbar,
+		#actionConfirmModal *::-webkit-scrollbar,
+		#qrModal *::-webkit-scrollbar {
+		    display: none;
+		    width: 0;
+		    height: 0;
+		}
+		
+		
+        /* =========================================================
+           CONFIRMATION MODALS
+           ========================================================= */
+        #confirmModal,
+        #actionConfirmModal {
+            display: none;
+        }
+
+		/* =========================================================
+		   FIXED VIEWPORT MODALS
+		   Popup is positioned relative to the browser screen,
+		   NOT relative to the registration page.
+		   ========================================================= */
+
+		#confirmModal,
+		#actionConfirmModal,
+		#qrModal {
+		    display: none;
+		}
+
+		#confirmModal.show,
+		#actionConfirmModal.show,
+		#qrModal.show {
+		    display: flex !important;
+		    position: fixed !important;
+
+		    /*
+		     * Always use the visible browser viewport.
+		     */
+		    top: 0 !important;
+		    left: 0 !important;
+		    right: 0 !important;
+		    bottom: 0 !important;
+		    width: 100vw !important;
+		    height: 100vh !important;
+			
+		    /*
+		     * Keep popup above the entire page.
+		     */
+		    z-index: 999999 !important;
+
+		    /*
+		     * Center relative to the viewport.
+		     */
+		    align-items: center !important;
+		    justify-content: center !important;
+			
+		    /*
+		     * Space between popup and screen edge.
+		     */
+		    padding: 20px !important;
+		    box-sizing: border-box !important;
+
+		    /*
+		     * NEVER allow the background/page
+		     * to scroll through the modal.
+		     */
+		    overflow: hidden !important;
+		    overscroll-behavior: none !important;
+		    background: rgba(15, 23, 42, 0.35);
+		}
+
+		#confirmModal .confirm-modal,
+		#actionConfirmModal .confirm-modal {
+		    position: relative !important;
+		    width: 620px;
+		    max-width: 90vw;
+
+		    /*
+		     * Popup itself stays within the viewport.
+		     */
+		    max-height: calc(100vh - 40px);
+		    overflow: hidden !important;
+		    background: #ffffff;
+		    border-radius: 18px;
+		    box-shadow: 0 20px 50px rgba(15, 23, 42, 0.20);
+		    display: flex;
+		    flex-direction: column;
+
+		    /*
+		     * Do not allow this element to create
+		     * another scrollbar.
+		     */
+		    scrollbar-width: none;
+		}
+
+		#confirmModal .confirm-modal::-webkit-scrollbar,
+		#actionConfirmModal .confirm-modal::-webkit-scrollbar {
+		    display: none;
+		    width: 0;
+		    height: 0;
+		}
+
+        #actionConfirmModal .confirm-modal {
+            width: 480px;
+        }
+
+		/* =========================================================
+		   CONFIRM MODAL HEADER
+		   ========================================================= */
+
+		.confirm-modal-header {
+		    position: relative;
+
+		    flex: 0 0 auto;
+
+		    min-height: 112px;
+
+		    padding: 28px 90px 20px;
+
+		    display: flex;
+		    flex-direction: column;
+		    align-items: center;
+		    justify-content: center;
+
+		    text-align: center;
+
+		    border-bottom: 1px solid #e8eef6;
+
+		    box-sizing: border-box;
+		}
+
+		/* Centered title */
+		.confirm-modal-header h2 {
+		    width: 100%;
+
+		    margin: 0 0 6px 0;
+
+		    font-size: 24px;
+		    font-weight: 800;
+
+		    line-height: 1.25;
+
+		    color: #172033;
+
+		    text-align: center;
+		}
+
+		/* Centered subtitle */
+		.confirm-modal-header p {
+		    width: 100%;
+
+		    margin: 0;
+
+		    font-size: 14px;
+		    line-height: 1.5;
+
+		    color: #64748b;
+
+		    text-align: center;
+		}
+
+		/* =========================================================
+		   CONFIRM MODAL BACK ARROW
+		   ========================================================= */
+
+		#confirmModal .download-modal-back {
+		    position: absolute;
+
+		    top: 50%;
+		    left: 24px;
+
+		    width: 52px;
+		    height: 52px;
+
+		    transform: translateY(-50%);
+
+		    display: flex;
+		    align-items: center;
+		    justify-content: center;
+
+		    padding: 0;
+
+		    border: none;
+		    border-radius: 15px;
+
+		    background: linear-gradient(
+		        145deg,
+		        #2563eb,
+		        #123b78
+		    );
+
+		    color: #ffffff;
+
+		    cursor: pointer;
+
+		    box-shadow:
+		        0 8px 20px rgba(18, 59, 120, 0.28),
+		        inset 0 1px 0 rgba(255, 255, 255, 0.25);
+
+		    transition:
+		        transform 0.22s ease,
+		        box-shadow 0.22s ease,
+		        background 0.22s ease;
+		}
+
+		/* Arrow */
+		#confirmModal .download-modal-back .back-arrow {
+		    display: block;
+
+		    font-family: Arial, Helvetica, sans-serif;
+
+		    font-size: 32px;
+		    font-weight: 400;
+
+		    line-height: 1;
+
+		    transform: translateX(-1px);
+		}
+
+		/* Hover */
+		#confirmModal .download-modal-back:hover {
+		    transform:
+		        translateY(-50%)
+		        translateX(-3px)
+		        scale(1.06);
+
+		    background: linear-gradient(
+		        145deg,
+		        #1d4ed8,
+		        #0f346d
+		    );
+
+		    box-shadow:
+		        0 12px 26px rgba(18, 59, 120, 0.38),
+		        inset 0 1px 0 rgba(255, 255, 255, 0.30);
+		}
+
+		/* Arrow movement */
+		#confirmModal .download-modal-back:hover .back-arrow {
+		    transform: translateX(-4px);
+		}
+
+		/* Click */
+		#confirmModal .download-modal-back:active {
+		    transform:
+		        translateY(-50%)
+		        translateX(-1px)
+		        scale(0.96);
+		}
+
+		/* Keyboard focus */
+		#confirmModal .download-modal-back:focus-visible {
+		    outline: 3px solid rgba(37, 99, 235, 0.25);
+		    outline-offset: 3px;
+		}
+
+        .confirm-modal-body {
+            flex: 0 0 auto;
+            padding: 18px 24px 22px;
+            overflow: hidden;
+        }
+
+        .confirm-message {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            margin-bottom: 14px;
+            padding: 11px 13px;
+            border: 1px solid #dbeafe;
+            border-radius: 10px;
+            background: #eff6ff;
+            color: #172033;
+        }
+
+        .confirm-message strong {
+            font-size: 13px;
+        }
+
+        .confirm-message span {
+            font-size: 12px;
+            color: #64748b;
+        }
+
+        .confirm-details {
+            display: flex;
+            flex-direction: column;
+            border: 1px solid #e8eef6;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .confirm-detail-row {
+            display: grid;
+            grid-template-columns: 42% 58%;
+            gap: 12px;
+            padding: 8px 13px;
+            border-bottom: 1px solid #eef2f7;
+            font-size: 12px;
+        }
+
+        .confirm-detail-row:last-child {
+            border-bottom: none;
+        }
+
+        .confirm-detail-row span {
+            color: #64748b;
+            font-weight: 600;
+        }
+
+        .confirm-detail-row strong {
+            color: #172033;
+            font-weight: 700;
+            overflow-wrap: anywhere;
+        }
+
+        .confirm-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 17px;
+        }
+
+        @media (max-width: 700px) {
+            #confirmModal.show,
+            #actionConfirmModal.show {
+                padding: 12px;
+            }
+
+            #confirmModal .confirm-modal,
+            #actionConfirmModal .confirm-modal {
+                width: 100%;
+                max-width: 100%;
+            }
+
+            .confirm-modal-header,
+            .confirm-modal-body {
+                padding-left: 16px;
+                padding-right: 16px;
+            }
+
+            .confirm-detail-row {
+                grid-template-columns: 1fr;
+                gap: 2px;
+            }
+
+            .confirm-actions {
+                flex-direction: column-reverse;
+            }
+
+            .confirm-actions .btn {
+                width: 100%;
+            }
+        }
+
+        /* =========================================================
+           PHONE + NUMERIC VALIDATION
+           ========================================================= */
+        .phone-input-row {
+            display: grid;
+            grid-template-columns: 90px minmax(0, 1fr);
+            gap: 8px;
+            width: 100%;
+        }
+
+        .phone-country-code {
+            text-align: center;
+            font-weight: 700;
+        }
+
+        .phone-input-row .form-control {
+            min-width: 0;
+        }
+
+        .form-control.invalid,
+        select.form-control.invalid {
+            border-color: #dc2626 !important;
+            box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.08);
+        }
+
+        .form-control.valid {
+            border-color: #16a34a !important;
+        }
+
+        @media (max-width: 600px) {
+            .phone-input-row {
+                grid-template-columns: 82px minmax(0, 1fr);
+            }
+        }
+		
+		.download-modal-back {
+		    width: 58px;
+		    height: 58px;
+
+		    display: flex;
+		    align-items: center;
+		    justify-content: center;
+
+		    border: none;
+		    border-radius: 16px;
+
+		    background: linear-gradient(135deg, #0d47a1, #1976d2);
+		    color: white;
+
+		    font-size: 30px;
+		    font-weight: 800;
+
+		    cursor: pointer;
+
+		    box-shadow:
+		        0 8px 20px rgba(13, 71, 161, 0.30),
+		        inset 0 1px 0 rgba(255,255,255,0.25);
+
+		    transition:
+		        transform 0.25s ease,
+		        box-shadow 0.25s ease,
+		        background 0.25s ease;
+		}
+
+		.download-modal-back:hover {
+		    transform: translateX(-5px) scale(1.08);
+
+		    box-shadow:
+		        0 12px 28px rgba(13, 71, 161, 0.40),
+		        inset 0 1px 0 rgba(255,255,255,0.30);
+		}
+
+		.download-modal-back:active {
+		    transform: translateX(-2px) scale(0.96);
+		}
+    </style>
+</head>
+
+<body>
+
+<header class="topbar">
+    <a href="/merchant-registration" class="brand">
+        <div class="brand-logo">QR</div>
+        <div class="brand-text">
+            <div class="brand-title">Merchant QR Portal</div>
+            <div class="brand-subtitle">Merchant Registration System</div>
+        </div>
+    </a>
+
+    <nav class="nav-links">
+        <a href="/merchant-registration" class="nav-link active">
+            <span>＋</span>
+            <span>New Registration</span>
+        </a>
+
+        <a href="/merchant-registrations" class="nav-link">
+            <span>▦</span>
+            <span>Created IDs</span>
+        </a>
+    </nav>
+</header>
+
+<main class="page-container">
+
+    <section class="page-header">
+        <div class="page-header-row">
+            <div>
+                <h1 class="page-title">Merchant QR Registration</h1>
+                <p class="page-description">
+                    Verify the merchant account and create a secure payment QR code.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <div class="steps">
+        <div class="step active">
+            <div class="step-number">01</div>
+            <span>Account Verification</span>
+        </div>
+
+        <div class="step-line"></div>
+
+        <div class="step active">
+            <div class="step-number">02</div>
+            <span>Merchant Details</span>
+        </div>
+
+        <div class="step-line"></div>
+
+        <div class="step">
+            <div class="step-number">03</div>
+            <span>QR Created</span>
+        </div>
+    </div>
+
+    <div th:if="${error}" class="alert alert-danger">
+        <strong>!</strong>
+        <span th:text="${error}">Error message</span>
+    </div>
+
+    <!-- =====================================================
+         ACCOUNT VERIFICATION
+         ===================================================== -->
+    <section class="card account-card">
+        <div class="card-header">
+            <div class="card-title-area">
+                <div class="card-icon">✓</div>
+                <div>
+                    <h2 class="card-title">Account Verification</h2>
+                    <p class="card-subtitle">
+                        Enter an existing account number before registering the merchant.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-body">
+
+            <div id="verifiedAccount" class="verified-account" style="display: none;">
+                <div class="verified-left">
+                    <div class="verified-icon">✓</div>
+                    <div>
+                        <div class="verified-title">Account Verified</div>
+                        <div class="verified-value" id="verifiedAccountNumber"></div>
+                    </div>
+                </div>
+
+                <div class="verified-status">Verified</div>
+            </div>
+
+            <div id="accountCheckSection">
+                <div class="account-check-row">
+
+                    <div class="form-group">
+                        <label class="form-label" for="accountNumberCheck">
+                            Account Number <span class="required">*</span>
+                        </label>
+
+                        <div class="account-input-wrapper">
+                            <span class="input-icon">#</span>
+
+                            <input
+                                type="text"
+                                id="accountNumberCheck"
+                                class="form-control"
+                                maxlength="15"
+                                inputmode="numeric"
+                                pattern="[0-9]{1,15}"
+                                placeholder="Enter account number"
+                                autocomplete="off">
+                        </div>
+                    </div>
+
+                    <button type="button" id="checkAccountButton" class="btn btn-blue">
+                        <span id="checkButtonText">✓ Check Account</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- =====================================================
+         REGISTRATION FORM
+         ===================================================== -->
+    <section id="registrationSection" class="card" style="display: none;">
+
+        <div class="card-header">
+            <div class="card-title-area">
+                <div class="card-icon">▣</div>
+                <div>
+                    <h2 class="card-title">Merchant Details</h2>
+                    <p class="card-subtitle">
+                        Complete the merchant information to generate the QR code.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-body">
+
+            <!-- novalidate allows our own inline validation to run
+                 without the browser moving/resetting the page -->
+            <form
+                method="post"
+                action="/merchant-registration"
+                id="merchantRegistrationForm"
+                novalidate>
+
+                <input type="hidden" name="accountNumber" id="accountNumber">
+
+                <div class="form-section">
+                    <h3 class="form-section-title">Merchant Information</h3>
+
+                    <div class="form-grid">
+
+                        <!-- MERCHANT NAME -->
+                        <div class="form-group">
+                            <label class="form-label" for="merchantName">
+                                Merchant Name <span class="required">*</span>
+                            </label>
+
+                            <input
+                                type="text"
+                                id="merchantName"
+                                name="merchantName"
+                                class="form-control"
+                                maxlength="25"
+                                placeholder="Enter merchant name"
+                                autocomplete="off"
+                                required>
+
+                            <div
+                                id="merchantNameMessage"
+                                class="field-message hidden"
+                                role="alert">
+                            </div>
+
+                            <small class="field-help">
+                                Auto-filled from account API. Editable.
+                                Maximum 25 characters; use only one space between words.
+                            </small>
+                        </div>
+
+                        <!-- MERCHANT TYPE -->
+                        <div class="form-group">
+                            <label class="form-label" for="merchantType">
+                                Merchant Type <span class="required">*</span>
+                            </label>
+
+                            <select id="merchantType" name="merchantType"
+                                    class="form-control" required>
+                                <option value="">Select merchant type</option>
+                                <option value="Retail">Retail</option>
+                                <option value="Restaurant">Restaurant</option>
+                                <option value="Hotel">Hotel</option>
+                                <option value="Supermarket">Supermarket</option>
+                                <option value="Service">Service</option>
+                            </select>
+
+                            <div
+                                id="merchantTypeMessage"
+                                class="field-message hidden"
+                                role="alert">
+                            </div>
+                        </div>
+
+                        <!-- CITY -->
+                        <div class="form-group">
+                            <label class="form-label" for="city">
+                                City <span class="required">*</span>
+                            </label>
+
+                            <select id="city" name="city" class="form-control" required>
+                                <option value="">Select city</option>
+                                <option value="DarEsSalaam">Dar Es Salaam</option>
+                                <option value="Arusha">Arusha</option>
+                                <option value="Mwanza">Mwanza</option>
+                                <option value="Dodoma">Dodoma</option>
+                                <option value="Mbeya">Mbeya</option>
+                                <option value="Zanzibar">Zanzibar</option>
+                            </select>
+
+                            <div
+                                id="cityMessage"
+                                class="field-message hidden"
+                                role="alert">
+                            </div>
+                        </div>
+
+                        <!-- COUNTRY CODE -->
+                        <div class="form-group">
+                            <label class="form-label" for="countryCode">
+                                Country Code <span class="required">*</span>
+                            </label>
+
+                            <input
+                                type="text"
+                                id="countryCode"
+                                name="countryCode"
+                                class="form-control"
+                                maxlength="8"
+                                placeholder="Auto-filled from account API"
+                                readonly
+                                required>
+
+                            <small class="field-help">
+                                Auto-filled from account API and cannot be changed.
+                            </small>
+                        </div>
+
+                        <!-- POSTAL CODE -->
+                        <div class="form-group">
+                            <label class="form-label" for="postalCode">
+                                Postal Code <span class="required">*</span>
+                            </label>
+
+                            <input
+                                type="text"
+                                id="postalCode"
+                                name="postalCode"
+                                class="form-control"
+                                maxlength="6"
+                                minlength="6"
+                                inputmode="numeric"
+                                pattern="[0-9]{6}"
+                                placeholder="Enter 6 digit postal code"
+                                required>
+
+                            <div
+                                id="postalCodeMessage"
+                                class="field-message hidden"
+                                role="alert">
+                            </div>
+                        </div>
+
+                        <!-- MOBILE -->
+                        <div class="form-group">
+                            <label class="form-label" for="mobileNumber">
+                                Mobile Number <span class="required">*</span>
+                            </label>
+
+                            <div class="phone-input-row">
+                                <input
+                                    type="text"
+                                    id="phoneCountryCode"
+                                    class="form-control phone-country-code"
+                                    value="+91"
+                                    maxlength="4"
+                                    placeholder="+91"
+                                    inputmode="text"
+                                    autocomplete="off"
+                                    aria-label="Phone country code">
+
+                                <input
+                                    type="tel"
+                                    id="mobileNumber"
+                                    name="mobileNumber"
+                                    class="form-control"
+                                    maxlength="10"
+                                    placeholder="Enter mobile number"
+                                    inputmode="numeric"
+                                    autocomplete="off"
+                                    required>
+                            </div>
+
+                            <div
+                                id="mobileNumberMessage"
+                                class="field-message hidden"
+                                role="alert">
+                            </div>
+
+                            <small class="field-help">
+                                Country code: + followed by 2 or 3 digits, for example
+                                +91 or +451. Country code + mobile number must contain
+                                exactly 12 digits.
+                            </small>
+                        </div>
+
+                        <!-- EMAIL -->
+                        <div class="form-group">
+                            <label class="form-label" for="emailId">
+                                Email ID <span class="required">*</span>
+                            </label>
+
+                            <input
+                                type="email"
+                                id="emailId"
+                                name="emailId"
+                                class="form-control"
+                                maxlength="150"
+                                placeholder="merchant@example.com"
+                                required>
+
+                            <small class="field-help">
+                                Auto-filled from API. Editable.
+                            </small>
+                        </div>
+
+                        <!-- CHARGES -->
+                        <div class="form-group">
+                            <label class="form-label" for="charges">
+                                Charges <span class="required">*</span>
+                            </label>
+
+                            <input
+                                type="text"
+                                id="charges"
+                                name="charges"
+                                class="form-control"
+                                maxlength="3"
+                                placeholder="Enter charges (0 - 100)"
+                                inputmode="numeric"
+                                autocomplete="off"
+                                required>
+
+                            <div
+                                id="chargesMessage"
+                                class="field-message hidden"
+                                role="alert">
+                            </div>
+
+                            <small class="field-help">
+                                Enter numbers only. Minimum 0 and maximum 100.
+                            </small>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- ACTIONS -->
+                <div class="form-actions">
+
+                    <button
+                        type="button"
+                        id="cancelRegistrationButton"
+                        class="btn btn-secondary">
+                        Cancel
+                    </button>
+
+                    <button
+                        type="button"
+                        class="btn btn-light"
+                        id="resetFormButton">
+                        Clear Form
+                    </button>
+
+					<button type="submit" id="submitButton" class="btn btn-primary">
+					    Submit
+					</button>
+
+                </div>
+            </form>
+        </div>
+    </section>
+
+    <footer class="page-footer">
+        Merchant QR Registration System
+        &nbsp;•&nbsp;
+        Secure Merchant Management Portal
+    </footer>
+</main>
+
+<!-- =========================================================
+     SUBMIT CONFIRMATION MODAL
+     ========================================================= -->
+<div id="confirmModal" class="modal-overlay">
+
+    <div class="confirm-modal">
+
+        <div class="confirm-modal-header">
+			<button
+			        type="button"
+			        id="downloadModalBackButton"
+			        class="download-modal-back"
+			        title="Back"
+			        aria-label="Back">
+
+			        <span class="back-arrow">←</span>
+
+			    </button>
+
+            <h2>Confirm Merchant Details</h2>
+
+            <p>
+                Please verify the entered details before generating the Merchant QR code.
+            </p>
+        </div>
+
+        <div class="confirm-modal-body">
+
+            <div class="confirm-message">
+                <strong>Are you sure the given details are correct and valid?</strong>
+                <span>Please review the information below before continuing.</span>
+            </div>
+
+            <div class="confirm-details">
+
+                <div class="confirm-detail-row">
+                    <span>Account Number</span>
+                    <strong id="confirmAccountNumber"></strong>
+                </div>
+
+                <div class="confirm-detail-row">
+                    <span>Merchant Name</span>
+                    <strong id="confirmMerchantName"></strong>
+                </div>
+
+                <div class="confirm-detail-row">
+                    <span>Merchant Type</span>
+                    <strong id="confirmMerchantType"></strong>
+                </div>
+
+                <div class="confirm-detail-row">
+                    <span>City</span>
+                    <strong id="confirmCity"></strong>
+                </div>
+
+                <div class="confirm-detail-row">
+                    <span>Country Code</span>
+                    <strong id="confirmCountryCode"></strong>
+                </div>
+
+                <div class="confirm-detail-row">
+                    <span>Postal Code</span>
+                    <strong id="confirmPostalCode"></strong>
+                </div>
+
+                <div class="confirm-detail-row">
+                    <span>Mobile Number</span>
+                    <strong id="confirmMobileNumber"></strong>
+                </div>
+
+                <div class="confirm-detail-row">
+                    <span>Email ID</span>
+                    <strong id="confirmEmailId"></strong>
+                </div>
+
+                <div class="confirm-detail-row">
+                    <span>Charges</span>
+                    <strong id="confirmCharges"></strong>
+                </div>
+
+            </div>
+
+            <div class="confirm-actions">
+				
+				<button
+                    type="button"
+                    id="cancelConfirmButton"
+                    class="btn btn-secondary">
+                    Cancel
+                </button>
+
+                <button
+                    type="button"
+                    id="generateMerchantQrButton"
+                    class="btn btn-primary">
+                    Generate Merchant QR
+                </button>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- =========================================================
+     CANCEL / CLEAR ACTION CONFIRMATION MODAL
+     ========================================================= -->
+<div id="actionConfirmModal" class="modal-overlay">
+
+    <div class="confirm-modal">
+
+        <div class="confirm-modal-header">
+
+            <button
+                type="button"
+                class="modal-close"
+                id="closeActionConfirmModal">
+                ×
+            </button>
+
+            <h2 id="actionConfirmTitle">Confirm Action</h2>
+
+            <p id="actionConfirmDescription">
+                Please confirm this action.
+            </p>
+
+        </div>
+
+        <div class="confirm-modal-body">
+
+            <div class="confirm-message">
+                <strong id="actionConfirmMessage">
+                    Are you sure you want to continue?
+                </strong>
+
+                <span id="actionConfirmSubMessage">
+                    Your entered information may be cleared.
+                </span>
+            </div>
+
+            <div class="confirm-actions">
+
+                <button
+                    type="button"
+                    id="actionConfirmNo"
+                    class="btn btn-secondary">
+                    No
+                </button>
+
+                <button
+                    type="button"
+                    id="actionConfirmYes"
+                    class="btn btn-primary">
+                    Yes
+                </button>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- =========================================================
+     QR RESULT MODAL
+     ========================================================= -->
+<div
+    id="qrModal"
+    class="modal-overlay"
+    th:classappend="${success} ? ' show' : ''">
+
+    <div class="qr-modal">
+
+        <div class="qr-modal-header">
+
+            <button
+                type="button"
+                class="modal-close"
+                id="closeQrModal">
+                ×
+            </button>
+
+            <h2>QR Code Created</h2>
+
+            <p>
+                Merchant registration completed successfully.
+            </p>
+        </div>
+
+        <div class="qr-modal-body">
+
+            <div class="qr-success-banner">
+                <div class="qr-success-icon">✓</div>
+                <span>
+                    The merchant QR code has been successfully generated and saved.
+                </span>
+            </div>
+
+            <div class="qr-frame">
+                <img
+                    th:if="${registration}"
+                    th:src="@{'/merchant-registrations/' + ${registration.id} + '/qr'}"
+                    alt="Merchant QR Code">
+            </div>
+
+            <div class="qr-meta">
+
+                <div class="qr-meta-box">
+                    <div class="qr-meta-label">Merchant ID</div>
+                    <div
+                        class="qr-meta-value"
+                        th:text="${registration != null ? registration.merchantId : ''}">
+                    </div>
+                </div>
+
+                <div class="qr-meta-box">
+                    <div class="qr-meta-label">Merchant Name</div>
+                    <div
+                        class="qr-meta-value"
+                        th:text="${registration != null ? registration.merchantName : ''}">
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="qr-actions">
+
+                <a
+                    th:if="${registration}"
+                    th:href="@{'/merchant-registrations/' + ${registration.id} + '/pdf'}"
+                    class="btn btn-primary">
+                    Download PDF
+                </a>
+
+                <a
+                    href="/merchant-registrations"
+                    class="btn btn-light">
+                    View Created IDs
+                </a>
+
+                <button
+                    type="button"
+                    class="btn btn-blue"
+                    id="newRegistrationButton">
+                    New Registration
+                </button>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    /* =========================================================
+       ELEMENTS
+       ========================================================= */
+
+    const accountInput = document.getElementById("accountNumberCheck");
+    const checkButton = document.getElementById("checkAccountButton");
+    const checkButtonText = document.getElementById("checkButtonText");
+
+    const accountCheckSection = document.getElementById("accountCheckSection");
+    const verifiedAccount = document.getElementById("verifiedAccount");
+    const verifiedAccountNumber = document.getElementById("verifiedAccountNumber");
+    const accountNumberHidden = document.getElementById("accountNumber");
+
+    const registrationSection = document.getElementById("registrationSection");
+    const form = document.getElementById("merchantRegistrationForm");
+
+    const merchantName = document.getElementById("merchantName");
+    const merchantType = document.getElementById("merchantType");
+    const city = document.getElementById("city");
+    const countryCode = document.getElementById("countryCode");
+    const postalCode = document.getElementById("postalCode");
+
+    const phoneCountryCode = document.getElementById("phoneCountryCode");
+    const mobileNumber = document.getElementById("mobileNumber");
+    const emailId = document.getElementById("emailId");
+    const charges = document.getElementById("charges");
+
+    const merchantNameMessage = document.getElementById("merchantNameMessage");
+    const merchantTypeMessage = document.getElementById("merchantTypeMessage");
+    const cityMessage = document.getElementById("cityMessage");
+    const postalCodeMessage = document.getElementById("postalCodeMessage");
+    const mobileNumberMessage = document.getElementById("mobileNumberMessage");
+    const chargesMessage = document.getElementById("chargesMessage");
+
+    const cancelRegistrationButton =
+        document.getElementById("cancelRegistrationButton");
+
+    const resetFormButton =
+        document.getElementById("resetFormButton");
+
+    /* =========================================================
+       ACCOUNT MESSAGE
+       ========================================================= */
+
+    let accountMessage = document.getElementById("accountMessage");
+
+    if (!accountMessage) {
+        accountMessage = document.createElement("div");
+        accountMessage.id = "accountMessage";
+        accountMessage.className = "field-message hidden";
+        accountMessage.setAttribute("role", "alert");
+        accountCheckSection.appendChild(accountMessage);
+    }
+
+    /* =========================================================
+       MODALS
+       ========================================================= */
+
+    const confirmModal = document.getElementById("confirmModal");
+    const closeConfirmModal = document.getElementById("closeConfirmModal");
+    const cancelConfirmButton = document.getElementById("cancelConfirmButton");
+    const generateMerchantQrButton =
+        document.getElementById("generateMerchantQrButton");
+
+    const actionConfirmModal =
+        document.getElementById("actionConfirmModal");
+
+    const actionConfirmTitle =
+        document.getElementById("actionConfirmTitle");
+
+    const actionConfirmDescription =
+        document.getElementById("actionConfirmDescription");
+
+    const actionConfirmMessage =
+        document.getElementById("actionConfirmMessage");
+
+    const actionConfirmSubMessage =
+        document.getElementById("actionConfirmSubMessage");
+
+    const actionConfirmYes =
+        document.getElementById("actionConfirmYes");
+
+    const actionConfirmNo =
+        document.getElementById("actionConfirmNo");
+
+    const closeActionConfirmModal =
+        document.getElementById("closeActionConfirmModal");
+
+    let pendingAction = null;
+
+    /* =========================================================
+       QR MODAL
+       ========================================================= */
+
+    const qrModal = document.getElementById("qrModal");
+    const closeQrModal = document.getElementById("closeQrModal");
+    const newRegistrationButton =
+        document.getElementById("newRegistrationButton");
+
+    /* =========================================================
+       CONFIRMATION VALUES
+       ========================================================= */
+
+    const confirmAccountNumber =
+        document.getElementById("confirmAccountNumber");
+
+    const confirmMerchantName =
+        document.getElementById("confirmMerchantName");
+
+    const confirmMerchantType =
+        document.getElementById("confirmMerchantType");
+
+    const confirmCity =
+        document.getElementById("confirmCity");
+
+    const confirmCountryCode =
+        document.getElementById("confirmCountryCode");
+
+    const confirmPostalCode =
+        document.getElementById("confirmPostalCode");
+
+    const confirmMobileNumber =
+        document.getElementById("confirmMobileNumber");
+
+    const confirmEmailId =
+        document.getElementById("confirmEmailId");
+
+    const confirmCharges =
+        document.getElementById("confirmCharges");
+		
+		/* =========================================================
+		   ORIGINAL DEFAULT VALUES
+		   These values are captured after account verification.
+		   Clear Form restores these values.
+		   ========================================================= */
+
+		let defaultFormValues = {
+		    merchantName: "",
+		    countryCode: "",
+		    emailId: "",
+		    phoneCountryCode: "+91",
+			mobileNumber: "",
+		    merchantType: "",
+		    city: ""
+		};
+
+    /* =========================================================
+       MESSAGE FUNCTIONS
+       ========================================================= */
+
+    function showMessage(element, message, type) {
+        if (!element) {
+            return;
+        }
+
+        element.textContent = message;
+        element.classList.remove("hidden", "success", "error");
+        element.classList.add(type);
+    }
+
+    function hideMessage(element) {
+        if (!element) {
+            return;
+        }
+
+        element.textContent = "";
+        element.classList.add("hidden");
+        element.classList.remove("success", "error");
+    }
+
+    /* =========================================================
+       CLEAR FIELD VALIDATION STATES
+       ========================================================= */
+
+    function clearValidationStates() {
+
+        [
+            merchantName,
+            merchantType,
+            city,
+            postalCode,
+            phoneCountryCode,
+            mobileNumber,
+            charges
+        ].forEach(function (element) {
+
+            if (element) {
+                element.classList.remove("invalid", "valid");
+            }
+        });
+
+        hideMessage(merchantNameMessage);
+        hideMessage(merchantTypeMessage);
+        hideMessage(cityMessage);
+        hideMessage(postalCodeMessage);
+        hideMessage(mobileNumberMessage);
+        hideMessage(chargesMessage);
+    }
+
+    /* =========================================================
+       RESET TO ACCOUNT VALIDATION
+       ========================================================= */
+
+    function returnToAccountValidation() {
+
+        form.reset();
+
+        accountNumberHidden.value = "";
+        accountInput.value = "";
+
+        phoneCountryCode.value = "+91";
+        mobileNumber.value = "";
+        charges.value = "";
+
+        clearValidationStates();
+
+        hideMessage(accountMessage);
+
+        registrationSection.style.display = "none";
+        verifiedAccount.style.display = "none";
+        accountCheckSection.style.display = "block";
+
+        confirmModal.classList.remove("show");
+        actionConfirmModal.classList.remove("show");
+
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth"
+        });
+
+        setTimeout(function () {
+            accountInput.focus();
+        }, 300);
+    }
+
+    /* =========================================================
+       CLEAR REGISTRATION FORM BUT KEEP VERIFIED ACCOUNT
+       ========================================================= */
+
+	   function clearRegistrationForm() {
+
+	       /*
+	        * Keep the verified account number.
+	        */
+	       const verifiedNumber =
+	           accountNumberHidden.value;
+
+
+	       /*
+	        * Restore the original values that existed
+	        * immediately after account verification.
+	        */
+	       merchantName.value =
+	           defaultFormValues.merchantName;
+
+	       countryCode.value =
+	           defaultFormValues.countryCode;
+
+	       emailId.value =
+	           defaultFormValues.emailId;
+
+	       phoneCountryCode.value =
+	           defaultFormValues.phoneCountryCode;
+			   
+		   mobileNumber.value =
+			   defaultFormValues.mobileNumber;
+
+	       merchantType.value =
+	           defaultFormValues.merchantType;
+
+	       city.value =
+	           defaultFormValues.city;
+
+
+	       /*
+	        * Clear only values entered by the user.
+	        */
+	       postalCode.value = "";
+
+	       charges.value = "";
+
+
+	       /*
+	        * Keep verified account number.
+	        */
+	       accountNumberHidden.value =
+	           verifiedNumber;
+
+
+	       /*
+	        * Clear all validation messages and
+	        * red/green field states.
+	        */
+	       clearValidationStates();
+
+
+	       /*
+	        * Keep registration section open.
+	        */
+	       registrationSection.style.display = "block";
+
+	       verifiedAccount.style.display = "flex";
+
+	       accountCheckSection.style.display = "none";
+
+
+	       /*
+	        * Close the Yes/No confirmation popup.
+	        */
+	       actionConfirmModal.classList.remove("show");
+
+
+	       /*
+	        * Put cursor back on Merchant Name.
+	        */
+	       setTimeout(function () {
+
+	           merchantName.focus();
+
+	       }, 100);
+
+	   }
+    /* =========================================================
+       ACTION CONFIRMATION
+       ========================================================= */
+
+    function openActionConfirmation(action) {
+
+        pendingAction = action;
+
+        if (action === "cancel") {
+
+            actionConfirmTitle.textContent =
+                "Cancel Registration?";
+
+            actionConfirmDescription.textContent =
+                "You are about to cancel the current merchant registration.";
+
+            actionConfirmMessage.textContent =
+                "Are you sure you want to cancel the registration?";
+
+            actionConfirmSubMessage.textContent =
+                "All entered merchant details will be cleared and you will return to account validation.";
+
+        } else if (action === "clear") {
+
+            actionConfirmTitle.textContent =
+                "Clear Form?";
+
+            actionConfirmDescription.textContent =
+                "You are about to clear the merchant details.";
+
+            actionConfirmMessage.textContent =
+                "Are you sure you want to clear the form?";
+
+            actionConfirmSubMessage.textContent =
+                "The verified account will remain selected, but the registration fields will be cleared.";
+        }
+		
+		unlockMainPage();
+
+        actionConfirmModal.classList.add("show");
+    }
+
+    if (actionConfirmYes) {
+
+        actionConfirmYes.addEventListener("click", function () {
+
+            if (pendingAction === "cancel") {
+                returnToAccountValidation();
+            }
+
+            if (pendingAction === "clear") {
+                clearRegistrationForm();
+            }
+
+            pendingAction = null;
+        });
+    }
+
+    if (actionConfirmNo) {
+
+        actionConfirmNo.addEventListener("click", function () {
+            pendingAction = null;
+            actionConfirmModal.classList.remove("show");
+        });
+    }
+
+    if (closeActionConfirmModal) {
+
+        closeActionConfirmModal.addEventListener("click", function () {
+            pendingAction = null;
+            actionConfirmModal.classList.remove("show");
+        });
+    }
+
+    if (actionConfirmModal) {
+
+        actionConfirmModal.addEventListener("click", function (event) {
+
+            if (event.target === actionConfirmModal) {
+                pendingAction = null;
+                actionConfirmModal.classList.remove("show");
+            }
+        });
+    }
+
+    /* =========================================================
+       CHECK BUTTON LOADING
+       ========================================================= */
+
+    function setChecking(checking) {
+
+        checkButton.disabled = checking;
+
+        if (checking) {
+            checkButtonText.textContent = "Checking...";
+            checkButton.classList.add("btn-loading");
+        } else {
+            checkButtonText.textContent = "✓ Check Account";
+            checkButton.classList.remove("btn-loading");
+        }
+    }
+
+    /* =========================================================
+       ACCOUNT NUMBER INPUT
+       NUMBERS ONLY / MAX 15 DIGITS
+       ========================================================= */
+
+    accountInput.addEventListener("input", function () {
+
+        accountInput.value =
+            accountInput.value
+                .replace(/\D/g, "")
+                .slice(0, 15);
+
+        hideMessage(accountMessage);
+    });
+
+    /* =========================================================
+       ACCOUNT CHECK
+       ========================================================= */
+
+    checkButton.addEventListener("click", async function () {
+
+        const value = accountInput.value.trim();
+
+        hideMessage(accountMessage);
+
+        registrationSection.style.display = "none";
+        verifiedAccount.style.display = "none";
+
+        if (!/^\d{1,15}$/.test(value)) {
+
+            showMessage(
+                accountMessage,
+                "Please enter a valid account number using numbers only. Maximum 15 digits.",
+                "error"
+            );
+
+            accountInput.focus();
+            return;
+        }
+
+        setChecking(true);
+
+        try {
+
+            const response = await fetch(
+                "/api/accounts/check?accountNumber=" +
+                encodeURIComponent(value),
+                {
+                    method: "GET",
+                    cache: "no-store"
+                }
+            );
+
+            const data = await response.json();
+
+            if (!response.ok) {
+
+                showMessage(
+                    accountMessage,
+                    data.message ||
+                    "Unable to validate the account.",
+                    "error"
+                );
+
+                return;
+            }
+
+            /*
+             * Account is valid ONLY when:
+             *
+             * success = true
+             * count   = 1
+             */
+            const accountVerified =
+                data.success === true &&
+                Number(data.count) === 1;
+
+            if (!accountVerified) {
+
+                showMessage(
+                    accountMessage,
+                    data.message ||
+                    "Account number could not be verified.",
+                    "error"
+                );
+
+                return;
+            }
+
+            const verifiedNumber =
+                data.accountNumber || value;
+
+            accountNumberHidden.value =
+                verifiedNumber;
+
+            verifiedAccountNumber.textContent =
+                verifiedNumber;
+
+            /* API mapping:
+               ACCOUNTNAME -> Merchant Name
+               CURRENCY    -> Country Code
+               EMAIL       -> Email ID
+               PHONENUMBER -> Mobile Number
+            */
+
+            merchantName.value =
+                data.merchantName || "";
+
+            countryCode.value =
+                data.countryCode || "";
+
+            emailId.value =
+                data.emailId || "";
+				
+				
+				/* =========================================================
+				   SAVE ORIGINAL DEFAULT VALUES
+				   These are restored when Clear Form is confirmed.
+				   ========================================================= */
+
+				defaultFormValues.merchantName =
+				    data.merchantName || "";
+
+				defaultFormValues.countryCode =
+				    data.countryCode || "";
+
+				defaultFormValues.emailId =
+				    data.emailId || "";
+
+				defaultFormValues.phoneCountryCode =
+				    "+91";
+
+				defaultFormValues.merchantType =
+				    merchantType.value;
+
+				defaultFormValues.city =
+				    city.value;
+
+            /*
+             * API phone number is used as the mobile number
+             * only if it contains digits. The user can edit it.
+             */
+            mobileNumber.value =
+                String(data.mobileNumber || "")
+                    .replace(/\D/g, "")
+                    .slice(0, 10);
+					
+				defaultFormValues.mobileNumber = mobileNumber.value;
+
+            verifiedAccount.style.display = "flex";
+            accountCheckSection.style.display = "none";
+
+            registrationSection.style.display = "block";
+
+            requestAnimationFrame(function () {
+
+                registrationSection.scrollIntoView({
+                    behavior: "smooth",
+                    block: "start"
+                });
+
+                setTimeout(function () {
+                    merchantName.focus();
+                }, 350);
+            });
+
+        } catch (error) {
+
+            console.error(
+                "Account validation error:",
+                error
+            );
+
+            showMessage(
+                accountMessage,
+                "Unable to connect to the account validation service.",
+                "error"
+            );
+
+        } finally {
+
+            setChecking(false);
+        }
+    });
+
+    /* =========================================================
+       MERCHANT NAME VALIDATION
+       ========================================================= */
+
+    function validateMerchantName(showError) {
+
+        const value = merchantName.value;
+
+        if (!value) {
+
+            if (showError) {
+                showMessage(
+                    merchantNameMessage,
+                    "Merchant name is required.",
+                    "error"
+                );
+            }
+
+            merchantName.classList.add("invalid");
+            merchantName.classList.remove("valid");
+
+            return false;
+        }
+
+        if (value.length > 25) {
+
+            if (showError) {
+                showMessage(
+                    merchantNameMessage,
+                    "Merchant name must not exceed 25 characters.",
+                    "error"
+                );
+            }
+
+            merchantName.classList.add("invalid");
+            merchantName.classList.remove("valid");
+
+            return false;
+        }
+
+        if (value.startsWith(" ") || value.endsWith(" ")) {
+
+            if (showError) {
+                showMessage(
+                    merchantNameMessage,
+                    "Leading or trailing spaces are not allowed.",
+                    "error"
+                );
+            }
+
+            merchantName.classList.add("invalid");
+            merchantName.classList.remove("valid");
+
+            return false;
+        }
+
+        if (value.includes("  ")) {
+
+            if (showError) {
+                showMessage(
+                    merchantNameMessage,
+                    "Only one space is allowed between words.",
+                    "error"
+                );
+            }
+
+            merchantName.classList.add("invalid");
+            merchantName.classList.remove("valid");
+
+            return false;
+        }
+
+        if (!/^[A-Za-z]+(?: [A-Za-z]+)*$/.test(value)) {
+
+            if (showError) {
+                showMessage(
+                    merchantNameMessage,
+                    "Use letters only, with one space between words.",
+                    "error"
+                );
+            }
+
+            merchantName.classList.add("invalid");
+            merchantName.classList.remove("valid");
+
+            return false;
+        }
+
+        hideMessage(merchantNameMessage);
+
+        merchantName.classList.remove("invalid");
+        merchantName.classList.add("valid");
+
+        return true;
+    }
+
+	merchantName.addEventListener("input", function () {
+
+	    // Remove anything except letters and spaces
+	    this.value = this.value.replace(/[^A-Za-z ]/g, "");
+
+	    // Prevent multiple spaces
+	    this.value = this.value.replace(/ {2,}/g, " ");
+
+	    // Prevent leading space
+	    this.value = this.value.replace(/^ /, "");
+
+	    // Maximum 25 characters
+	    if (this.value.length > 25) {
+	        this.value = this.value.substring(0, 25);
+	    }
+
+	    validateMerchantName(false);
+	});
+
+    merchantName.addEventListener("blur", function () {
+        validateMerchantName(true);
+    });
+
+    /* =========================================================
+       POSTAL CODE
+       ========================================================= */
+
+    function validatePostalCode(showError) {
+
+        postalCode.value =
+            postalCode.value
+                .replace(/\D/g, "")
+                .slice(0, 6);
+
+        const valid =
+            /^\d{6}$/.test(postalCode.value);
+
+        if (!valid) {
+
+            if (showError) {
+                showMessage(
+                    postalCodeMessage,
+                    "Postal code must contain exactly 6 digits.",
+                    "error"
+                );
+            }
+
+            postalCode.classList.add("invalid");
+            postalCode.classList.remove("valid");
+
+            return false;
+        }
+
+        hideMessage(postalCodeMessage);
+
+        postalCode.classList.remove("invalid");
+        postalCode.classList.add("valid");
+
+        return true;
+    }
+
+    postalCode.addEventListener("input", function () {
+        validatePostalCode(false);
+    });
+
+    postalCode.addEventListener("blur", function () {
+        validatePostalCode(true);
+    });
+
+    /* =========================================================
+       PHONE COUNTRY CODE
+       ========================================================= */
+
+    function validatePhoneCountryCode(showError) {
+
+        const value =
+            phoneCountryCode.value.trim();
+
+        const valid =
+            /^\+\d{2,3}$/.test(value);
+
+        if (!valid) {
+
+            if (showError) {
+                showMessage(
+                    mobileNumberMessage,
+                    "Country code must be + followed by 2 or 3 digits, for example +91 or +451.",
+                    "error"
+                );
+            }
+
+            phoneCountryCode.classList.add("invalid");
+            phoneCountryCode.classList.remove("valid");
+
+            return false;
+        }
+
+        phoneCountryCode.classList.remove("invalid");
+        phoneCountryCode.classList.add("valid");
+
+        return true;
+    }
+
+    /* =========================================================
+       MOBILE NUMBER
+       ========================================================= */
+
+    function validateMobileNumber(showError) {
+
+        const countryValue =
+            phoneCountryCode.value.trim();
+
+        const mobileValue =
+            mobileNumber.value;
+
+        const countryDigits =
+            countryValue.replace(/\D/g, "");
+
+        const mobileDigits =
+            mobileValue.replace(/\D/g, "");
+
+        if (!/^\+\d{2,3}$/.test(countryValue)) {
+
+            if (showError) {
+                showMessage(
+                    mobileNumberMessage,
+                    "Enter a country code such as +91 or +451.",
+                    "error"
+                );
+            }
+
+            mobileNumber.classList.add("invalid");
+            mobileNumber.classList.remove("valid");
+
+            return false;
+        }
+
+        if (!/^\d+$/.test(mobileValue)) {
+
+            if (showError) {
+                showMessage(
+                    mobileNumberMessage,
+                    "Phone number must contain numbers only. Letters and spaces are not allowed.",
+                    "error"
+                );
+            }
+
+            mobileNumber.classList.add("invalid");
+            mobileNumber.classList.remove("valid");
+
+            return false;
+        }
+
+        if (mobileDigits.length === 0) {
+
+            if (showError) {
+                showMessage(
+                    mobileNumberMessage,
+                    "Mobile number is required.",
+                    "error"
+                );
+            }
+
+            mobileNumber.classList.add("invalid");
+            mobileNumber.classList.remove("valid");
+
+            return false;
+        }
+
+        const totalDigits =
+            countryDigits.length + mobileDigits.length;
+
+        if (totalDigits !== 12) {
+
+            if (showError) {
+                showMessage(
+                    mobileNumberMessage,
+                    "Country code + mobile number must contain exactly 12 digits.",
+                    "error"
+                );
+            }
+
+            mobileNumber.classList.add("invalid");
+            mobileNumber.classList.remove("valid");
+
+            return false;
+        }
+
+        mobileNumber.classList.remove("invalid");
+        mobileNumber.classList.add("valid");
+
+        hideMessage(mobileNumberMessage);
+
+        return true;
+    }
+
+    phoneCountryCode.addEventListener("input", function () {
+
+        let value =
+            phoneCountryCode.value;
+
+        value =
+            "+" +
+            value
+                .replace(/\+/g, "")
+                .replace(/\D/g, "")
+                .slice(0, 3);
+
+        phoneCountryCode.value = value;
+
+        validateMobileNumber(false);
+    });
+
+    mobileNumber.addEventListener("input", function () {
+
+        mobileNumber.value =
+            mobileNumber.value
+                .replace(/\D/g, "")
+                .slice(0, 10);
+
+        validateMobileNumber(false);
+    });
+
+    mobileNumber.addEventListener("blur", function () {
+        validateMobileNumber(true);
+    });
+
+    phoneCountryCode.addEventListener("blur", function () {
+        validateMobileNumber(true);
+    });
+
+    /* =========================================================
+       CHARGES
+       NUMBERS ONLY / 0 TO 100
+       ========================================================= */
+
+    function validateCharges(showError) {
+
+        const value =
+            charges.value.trim();
+
+        if (value === "") {
+
+            if (showError) {
+                showMessage(
+                    chargesMessage,
+                    "Charges are required. Enter a value from 0 to 100.",
+                    "error"
+                );
+            }
+
+            charges.classList.add("invalid");
+            charges.classList.remove("valid");
+
+            return false;
+        }
+
+        if (!/^\d+$/.test(value)) {
+
+            if (showError) {
+                showMessage(
+                    chargesMessage,
+                    "Charges must contain numbers only.",
+                    "error"
+                );
+            }
+
+            charges.classList.add("invalid");
+            charges.classList.remove("valid");
+
+            return false;
+        }
+
+        const numericValue =
+            Number(value);
+
+        if (numericValue > 100) {
+
+            if (showError) {
+                showMessage(
+                    chargesMessage,
+                    "Charges must be maximum 100.",
+                    "error"
+                );
+            }
+
+            charges.classList.add("invalid");
+            charges.classList.remove("valid");
+
+            return false;
+        }
+
+        charges.classList.remove("invalid");
+        charges.classList.add("valid");
+
+        hideMessage(chargesMessage);
+
+        return true;
+    }
+
+    charges.addEventListener("input", function () {
+
+        charges.value =
+            charges.value
+                .replace(/\D/g, "")
+                .slice(0, 3);
+
+        if (charges.value === "") {
+
+            charges.classList.remove("invalid", "valid");
+            hideMessage(chargesMessage);
+
+            return;
+        }
+
+        const value =
+            Number(charges.value);
+
+        if (value > 100) {
+
+            charges.classList.add("invalid");
+            charges.classList.remove("valid");
+
+            showMessage(
+                chargesMessage,
+                "Charges must be maximum 100.",
+                "error"
+            );
+
+        } else {
+
+            charges.classList.remove("invalid");
+            charges.classList.add("valid");
+
+            hideMessage(chargesMessage);
+        }
+    });
+
+    charges.addEventListener("blur", function () {
+        validateCharges(true);
+    });
+
+    /* =========================================================
+       SELECT VALIDATION
+       ========================================================= */
+
+    function validateSelectFields(showError) {
+
+        let valid = true;
+
+        if (!merchantType.value) {
+
+            valid = false;
+            merchantType.classList.add("invalid");
+
+            if (showError) {
+                showMessage(
+                    merchantTypeMessage,
+                    "Please select a merchant type.",
+                    "error"
+                );
+            }
+
+        } else {
+
+            merchantType.classList.remove("invalid");
+            hideMessage(merchantTypeMessage);
+        }
+
+        if (!city.value) {
+
+            valid = false;
+            city.classList.add("invalid");
+
+            if (showError) {
+                showMessage(
+                    cityMessage,
+                    "Please select a city.",
+                    "error"
+                );
+            }
+
+        } else {
+
+            city.classList.remove("invalid");
+            hideMessage(cityMessage);
+        }
+
+        return valid;
+    }
+
+    merchantType.addEventListener("change", function () {
+        validateSelectFields(true);
+    });
+
+    city.addEventListener("change", function () {
+        validateSelectFields(true);
+    });
+
+    /* =========================================================
+       REGISTRATION CANCEL
+       SHOW YES / NO POPUP
+       ========================================================= */
+
+    if (cancelRegistrationButton) {
+
+        cancelRegistrationButton.addEventListener("click", function () {
+            openActionConfirmation("cancel");
+        });
+    }
+
+    /* =========================================================
+       CLEAR FORM
+       SHOW YES / NO POPUP
+       ========================================================= */
+
+    if (resetFormButton) {
+
+        resetFormButton.addEventListener("click", function () {
+            openActionConfirmation("clear");
+        });
+    }
+
+    /* =========================================================
+       FORM SUBMIT
+       IMPORTANT:
+       - Prevent backend submit until validation succeeds.
+       - Errors remain on registration page.
+       - No reset.
+       - No return to account page.
+       ========================================================= */
+	   
+	   function resetSubmitButton() {
+	           const submitButton = document.getElementById("submitButton");
+
+	           if (!submitButton) {
+	               return;
+	           }
+
+	           submitButton.disabled = false;
+	           submitButton.classList.remove("btn-loading", "processing");
+	           submitButton.textContent = "Submit";
+	       }
+
+	       function setSubmitProcessing() {
+	           const submitButton = document.getElementById("submitButton");
+
+	           if (!submitButton) {
+	               return;
+	           }
+
+	           submitButton.disabled = true;
+	           submitButton.classList.add("btn-loading");
+	           submitButton.textContent = "Processing...";
+	       }
+		   
+		   form.addEventListener("submit", function (event) {
+
+		           event.preventDefault();
+				   event.stopImmediatePropagation();
+
+				   resetSubmitButton();
+
+		           const nameValid =
+		               validateMerchantName(true);
+
+		           const postalValid =
+		               validatePostalCode(true);
+
+		           const phoneCodeValid =
+		               validatePhoneCountryCode(true);
+
+		           const phoneValid =
+		               validateMobileNumber(true);
+
+		           const chargesValid =
+		               validateCharges(true);
+
+		           const selectFieldsValid =
+		               validateSelectFields(true);
+
+		           if (
+
+		               !nameValid ||
+		               !postalValid ||
+		               !phoneCodeValid ||
+		               !phoneValid ||
+		               !chargesValid ||
+		               !selectFieldsValid
+
+		           ) {
+
+            /*
+             * Stay on the registration page.
+             * Do not show "Processing".
+             * Do not reset anything.
+             */
+
+            const submitButton =
+                document.getElementById("submitButton");
+
+            if (submitButton) {
+                submitButton.disabled = false;
+                submitButton.classList.remove("btn-loading");
+
+                const submitText =
+                    submitButton.querySelector("span");
+
+                if (submitText) {
+                    submitText.textContent = "Submit";
+                }
+            }
+
+            return;
+        }
+
+        /* =====================================================
+           LOAD FORM DATA INTO CONFIRMATION POPUP
+           ===================================================== */
+
+        confirmAccountNumber.textContent =
+            accountNumberHidden.value;
+
+        confirmMerchantName.textContent =
+            merchantName.value;
+
+        confirmMerchantType.textContent =
+            merchantType.value;
+
+        confirmCity.textContent =
+            city.value;
+
+        confirmCountryCode.textContent =
+            countryCode.value;
+
+        confirmPostalCode.textContent =
+            postalCode.value;
+
+        confirmMobileNumber.textContent =
+            phoneCountryCode.value +
+            mobileNumber.value;
+
+        confirmEmailId.textContent =
+            emailId.value;
+
+        confirmCharges.textContent =
+            charges.value;
+			
+		lockMainPage();
+
+        confirmModal.classList.add("show");
+    });
+
+    /* =========================================================
+       SUBMIT CONFIRMATION CANCEL
+       CANCEL ENTIRE PROCESS
+       ========================================================= */
+
+    if (cancelConfirmButton) {
+
+        cancelConfirmButton.addEventListener("click", function () {
+			
+			confirmModal.classList.remove("show");
+
+			unlockMainPage();
+				
+            returnToAccountValidation();
+        });
+    }
+
+    /* =========================================================
+       CLOSE SUBMIT CONFIRMATION
+       X ONLY CLOSES POPUP
+       ========================================================= */
+
+    if (closeConfirmModal) {
+
+        closeConfirmModal.addEventListener("click", function () {
+            confirmModal.classList.remove("show");
+			
+			unlockMainPage();
+        });
+    }
+
+    if (confirmModal) {
+
+        confirmModal.addEventListener("click", function (event) {
+
+            if (event.target === confirmModal) {
+                confirmModal.classList.remove("show");
+				
+				unlockMainPage();
+            }
+        });
+    }
+
+    /* =========================================================
+       GENERATE MERCHANT QR
+       ========================================================= */
+
+    if (generateMerchantQrButton) {
+
+        generateMerchantQrButton.addEventListener(
+            "click",
+            function () {
+
+                const nameValid =
+                    validateMerchantName(true);
+
+                const postalValid =
+                    validatePostalCode(true);
+
+                const phoneCodeValid =
+                    validatePhoneCountryCode(true);
+
+                const phoneValid =
+                    validateMobileNumber(true);
+
+                const chargesValid =
+                    validateCharges(true);
+
+                const selectFieldsValid =
+                    validateSelectFields(true);
+
+                if (
+                    !nameValid ||
+                    !postalValid ||
+                    !phoneCodeValid ||
+                    !phoneValid ||
+                    !chargesValid ||
+                    !selectFieldsValid
+                ) {
+                    return;
+                }
+
+                /*
+                 * Backend receives the complete phone number:
+                 *
+                 * +91 + 1234567890
+                 * = +911234567890
+                 */
+
+                const originalMobileNumber =
+                    mobileNumber.value;
+
+                mobileNumber.value =
+                    phoneCountryCode.value +
+                    originalMobileNumber;
+
+                confirmModal.classList.remove("show");
+
+                /*
+                 * form.submit() intentionally bypasses the submit
+                 * event because validation has already completed.
+                 */
+                form.submit();
+            }
+        );
+    }
+
+    /* =========================================================
+       QR MODAL
+       ========================================================= */
+
+    if (closeQrModal && qrModal) {
+
+        closeQrModal.addEventListener("click", function () {
+            qrModal.classList.remove("show");
+        });
+
+        qrModal.addEventListener("click", function (event) {
+
+            if (event.target === qrModal) {
+                qrModal.classList.remove("show");
+            }
+        });
+    }
+
+    /* =========================================================
+       NEW REGISTRATION
+       ========================================================= */
+
+    if (newRegistrationButton) {
+
+        newRegistrationButton.addEventListener("click", function () {
+            window.location.href = "/merchant-registration";
+        });
+    }
+});
+
+/* =========================================================
+   MODAL PAGE LOCK
+   Freeze main page while popup is open.
+   ========================================================= */
+
+let savedScrollPosition = 0;
+
+function lockMainPage() {
+
+    savedScrollPosition =
+        window.scrollY ||
+        window.pageYOffset ||
+        document.documentElement.scrollTop ||
+        0;
+
+    document.documentElement.classList.add("modal-open");
+    document.body.classList.add("modal-open");
+
+    /*
+     * Keep the page at exactly the same position.
+     */
+    window.scrollTo(0, savedScrollPosition);
+}
+
+
+function unlockMainPage() {
+
+    document.documentElement.classList.remove("modal-open");
+    document.body.classList.remove("modal-open");
+
+    /*
+     * Restore the exact previous scroll position.
+     */
+    window.scrollTo(0, savedScrollPosition);
+}
+</script>
+
+<!-- =========================================================
+     AUTOMATIC PDF DOWNLOAD
+     ========================================================= -->
+<script th:if="${success}">
+document.addEventListener("DOMContentLoaded", function () {
+
+    const pdfUrl =
+        "[[${'/merchant-registrations/' + registration.id + '/pdf'}]]";
+
+    const link =
+        document.createElement("a");
+
+    link.href = pdfUrl;
+
+    link.download =
+        "merchant-[[${registration.merchantId}]].pdf";
+
+    document.body.appendChild(link);
+
+    link.click();
+
+    document.body.removeChild(link);
+});
+</script>
+
+<script src="/js/merchant-animations.js"></script>
+<script src="/js/merchant-characters.js"></script>
+
+</body>
+</html>
